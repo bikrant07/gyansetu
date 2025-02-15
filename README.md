@@ -49,7 +49,7 @@ flutter run
 - **Leverage AI-Based Infrastructure Analytics** to assess and improve school facilities using advanced AI models.
 
 ## 📄 License
-This project is licensed under the [MIT License](LICENSE).
+This project is for **demonstration purposes only** and is **not intended for replication or redistribution**. Any use of this material should be strictly for educational or reference purposes.
 
 ---
-**GyanSetu - IIT Lucknow | Empowering Education with AI & Technology**
+**GyanSetu - IIIT Lucknow | Empowering Education with AI & Technology**
