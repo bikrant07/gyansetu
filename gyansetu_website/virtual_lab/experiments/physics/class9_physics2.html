@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 9 Physics - Experiment 2</title>
+    <link rel="stylesheet" href="../../css/experiments.css">
+</head>
+<body>
+    <header>
+        <h1>Class 9 Physics - Archimedes Principle</h1>
+    </header>
+    <main>
+        <h2>Aim</h2>
+        <p>To verify Archimedes' principle, which states that when a body is partially or completely immersed in a fluid, it experiences an upward buoyant force equal to the weight of the displaced fluid.</p>
+
+        <h2>Materials Required</h2>
+        <ul>
+            <li>Spring balance (for measuring weight)</li>
+            <li>Overflow can (to collect displaced water)</li>
+            <li>Beaker (to collect and measure displaced water)</li>
+            <li>Solid object (such as a metal or wooden block)</li>
+            <li>Water</li>
+        </ul>
+
+        <h2>Image Reference</h2>
+        <img src="../../assets/9p2.png" alt="Relevant Image for Experiment 9p2" class="experiment-image">
+
+        <h2>Procedure</h2>
+        <ol>
+            <li>Measure the weight of the object in air using the spring balance. Record the weight as W<sub>air</sub>.</li>
+            <li>Submerge the object completely in water, making sure that the object does not touch the sides or bottom of the container. Measure the apparent weight of the object using the spring balance. Record this weight as W<sub>water</sub>.</li>
+            <li>Fill the overflow can with water and submerge the object in it. The displaced water will overflow from the can into the beaker.</li>
+            <li>Measure the volume of the displaced water by collecting it in the beaker. Record the weight of the displaced water as W<sub>displaced</sub>.</li>
+            <li>Compare the loss in weight of the object in water (W<sub>air</sub> - W<sub>water</sub>) with the weight of the displaced water (W<sub>displaced</sub>).</li>
+        </ol>
+
+        <h2>Observation</h2>
+        <p>The weight of the displaced water is found to be equal to the loss in weight of the object when submerged in water. This verifies Archimedes' principle.</p>
+
+        <h2>Precautions</h2>
+        <ul>
+            <li>Ensure that the object is fully submerged in water, without touching the sides or bottom of the container.</li>
+            <li>Use a calibrated spring balance to get accurate weight measurements.</li>
+            <li>Ensure that the overflow can and beaker are free of air bubbles, which could affect the accuracy of measurements.</li>
+        </ul>
+
+        <h2>Conclusion</h2>
+        <p>The experiment confirms Archimedes' principle, as the weight of the displaced water is equal to the loss of weight of the object when immersed in water. This demonstrates the buoyant force acting on the object.</p>
+
+        <h2>Video Reference</h2>
+        <iframe src="https://www.youtube.com/embed/_p-hwElkrlk" frameborder="0" allowfullscreen></iframe>
+
+        <div class="quiz-section">
+            <h2>Quiz</h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="experimentProgress"></div>
+                </div>
+                <p id="progressText">Progress: 0%</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="question">
+                    <p>1. Archimedes principle states that the buoyant force is equal to:</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="a">a) Weight of the object</label>
+                        <label><input type="radio" name="q1" value="b">b) Mass of the object</label>
+                        <label><input type="radio" name="q1" value="c">c) Weight of displaced fluid</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>2. When an object is fully immersed in a fluid, the apparent loss in weight is:</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="a">a) Less than the weight of displaced fluid</label>
+                        <label><input type="radio" name="q2" value="b">b) Equal to the weight of displaced fluid</label>
+                        <label><input type="radio" name="q2" value="c">c) More than the weight of displaced fluid</label>
+                    </div>
+                </div>
+
+                <button id="submitQuiz" class="submit-btn">Submit Answers</button>
+                <div id="quizResult"></div>
+            </div>
+        </div>
+    </main>
+<script src="../../js/experiments.js"></script>
+</body>
+</html>

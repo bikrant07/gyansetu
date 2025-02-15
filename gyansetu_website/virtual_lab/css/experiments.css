@@ -1,0 +1,314 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+header {
+    background-color: #007BFF;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 3px solid #0056b3; /* More contrast */
+}
+
+header h1 {
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+main {
+    padding: 40px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+h2 {
+    color: #333;
+    margin-top: 20px;
+    font-size: 26px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 10px;
+}
+
+ul, ol {
+    text-align: left;
+    margin: 20px auto;
+    max-width: 700px;
+    padding-left: 20px;
+    line-height: 1.8;
+    font-size: 18px;
+}
+
+ul li, ol li {
+    margin-bottom: 10px;
+}
+
+iframe {
+    display: block;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 700px;
+    height: 420px;
+    border: 2px solid #007BFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+iframe:hover {
+    transform: scale(1.05);
+}
+
+.experiment-image {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border: 3px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.experiment-image:hover {
+    transform: scale(1.05);
+}
+
+.experiment-image:active {
+    transform: scale(1);
+}
+
+/* Section for each experiment (container for image, text, and video) */
+.experiment-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.experiment-section .text-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+    max-width: 45%;
+}
+
+.experiment-section .text-content h2 {
+    font-size: 24px;
+    color: #007BFF;
+}
+
+.experiment-section .text-content p {
+    font-size: 18px;
+}
+
+.experiment-section .text-content ul, .experiment-section .text-content ol {
+    padding-left: 30px;
+    font-size: 16px;
+}
+
+.experiment-section .video-frame {
+    flex: 1;
+    max-width: 45%;
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+.experiment-section .video-frame iframe {
+    max-width: 100%;
+    height: 420px;
+    border-radius: 10px;
+}
+
+/* Experiment Image Gallery */
+.experiment-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.experiment-gallery .experiment-image {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.experiment-gallery .experiment-image:hover {
+    transform: scale(1.1);
+}
+
+.experiment-gallery .experiment-image:active {
+    transform: scale(1);
+}
+
+/* Buttons (Optional, for future interactivity) */
+button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Add some space at the bottom of the page */
+footer {
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 16px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Add these media queries */
+@media (max-width: 768px) {
+    main {
+        padding: 20px 15px;
+        margin: 10px;
+    }
+
+    .experiment-section {
+        flex-direction: column;
+    }
+
+    .experiment-section .text-content,
+    .experiment-section .video-frame {
+        max-width: 100%;
+    }
+
+    .experiment-section .video-frame iframe {
+        height: 240px;
+    }
+
+    ul, ol {
+        padding-left: 15px;
+        font-size: 16px;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    .experiment-image {
+        max-width: 100%;
+    }
+
+    footer {
+        position: static;
+        padding: 15px 0;
+    }
+}
+.progress-container {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.5s ease-in-out;
+}
+
+.quiz-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.quiz {
+    margin-bottom: 30px;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.options label {
+    display: block;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.options label:hover {
+    background-color: #f0f0f0;
+}
+
+#submitQuiz {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#submitQuiz:hover {
+    background-color: #45a049;
+}
+
+#quizResult {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.correct {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.incorrect {
+    background-color: #f2dede;
+    color: #a94442;
+}

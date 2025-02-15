@@ -1,0 +1,176 @@
+{
+    "rules": {
+      
+      // Global read and write rules for authenticated users
+      ".read": "auth != null",
+      ".write": "auth != null",
+        
+        // Users collection
+        "users": {
+            ".read": "auth != null",
+            "$uid": {
+                ".write": "auth != null && auth.uid === $uid",
+                ".validate": "newData.hasChildren(['name', 'email', 'role'])",
+                "name": { ".validate": "newData.isString() && newData.val().length > 0" },
+                "email": { ".validate": "newData.isString() && newData.val().length > 0" },
+                "role": { ".validate": "newData.isString() && (newData.val() === 'teacher' || newData.val() === 'student')" }
+            }
+        },
+
+        // Materials collection
+        "materials": {
+            ".read": "auth != null",
+            ".indexOn": ["type", "teacherId"],
+            "$materialId": {
+                ".write": "auth != null && 
+                    (!data.exists() || data.child('teacherId').val() === auth.uid) && 
+                    root.child('users').child(auth.uid).child('role').val() === 'teacher'",
+                ".validate": "newData.hasChildren(['class', 'subject', 'topic', 'timestamp', 'teacherId', 'type'])",
+                "class": { 
+                    ".validate": "newData.isString() && newData.val().matches(/^Class [0-9]{1,2}$/)" 
+                },
+                "subject": { 
+                    ".validate": "newData.isString() && newData.val().length > 0" 
+                },
+                "topic": { 
+                    ".validate": "newData.isString() && newData.val().length > 0" 
+                },
+                "content": { 
+                    ".validate": "!newData.exists() || newData.isString()" 
+                },
+                "fileUrl": { 
+                    ".validate": "!newData.exists() || newData.isString()" 
+                },
+                "fileName": { 
+                    ".validate": "!newData.exists() || newData.isString()" 
+                },
+                "timestamp": { 
+                    ".validate": "newData.isNumber()" 
+                },
+                "teacherId": { 
+                    ".validate": "newData.isString() && newData.val() === auth.uid" 
+                },
+                "type": { 
+                    ".validate": "newData.isString() && 
+                        (newData.val() === 'topic-content' || newData.val() === 'study-material')" 
+                }
+            }
+        },
+
+        // Active Meetings collection
+        "active_meetings": {
+            ".indexOn": ["meetingName", "isActive"],
+            ".read": "auth != null",
+            ".write": "auth != null"
+        },
+
+        // Messages collection
+        "messages": {
+            "public": {
+                ".read": "auth != null",
+                ".write": "auth != null",
+                "$messageId": {
+                    ".validate": "newData.hasChildren(['text', 'userId', 'userName', 'timestamp'])",
+                    "text": { ".validate": "newData.isString()" },
+                    "userId": { ".validate": "newData.isString()" },
+                    "userName": { ".validate": "newData.isString()" },
+                    "timestamp": { ".validate": "newData.isNumber() || newData.val() === 'TIMESTAMP'" }
+                }
+            },
+            "private": {
+                "$chatId": {
+                    ".read": "auth != null && $chatId.contains(auth.uid)",
+                    ".write": "auth != null && $chatId.contains(auth.uid)",
+                    "$messageId": {
+                        ".validate": "newData.hasChildren(['text', 'userId', 'userName', 'timestamp'])",
+                        "text": { ".validate": "newData.isString()" },
+                        "userId": { ".validate": "newData.isString()" },
+                        "userName": { ".validate": "newData.isString()" },
+                        "timestamp": { ".validate": "newData.isNumber() || newData.val() === 'TIMESTAMP'" }
+                    }
+                }
+            }
+        },
+
+        // Rooms collection
+        "rooms": {
+            "$roomId": {
+                "drawings": {
+                    ".read": true,
+                    ".write": true,
+                    "$drawingId": {
+                        ".validate": "newData.hasChildren(['type', 'timestamp', 'userId'])"
+                    }
+                },
+                "users": {
+                    ".read": true,
+                    ".write": true,
+                    "$userId": {
+                        ".validate": "newData.hasChildren(['timestamp', 'active'])"
+                    }
+                }
+            }
+        },
+          //Create quiz and assignment
+        "quizzes": {
+            ".read": "auth != null",
+            ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'teacher'"
+        },
+          "quiz_submissions": {
+            ".read": "auth != null",
+            ".write": "auth != null",
+            "$submissionId": {
+                ".validate": "newData.hasChildren(['quizId', 'studentId', 'answers', 'score', 'timestamp'])",
+                "studentId": {
+                    ".validate": "newData.val() === auth.uid"
+                },
+                "timestamp": {
+                    ".validate": "newData.isNumber()"
+                },
+                "score": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+                }
+            }
+        },
+
+        "assignments": {
+            ".read": "auth != null",
+            ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'teacher'",
+            "$assignmentId": {
+                ".validate": "newData.hasChildren(['class', 'subject', 'title', 'description', 'content', 'dueDate', 'teacherId', 'timestamp'])"
+            }
+        },
+         // Recordings collection
+      "recordings": {
+        ".read": "auth != null", // Authenticated users can view recordings
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'teacher'",
+        "$recordingId": {
+          ".validate": "newData.hasChildren(['title', 'subject', 'description', 'downloadURL', 'professor', 'timestamp', 'uploadedBy'])",
+          "title": { ".validate": "newData.isString() && newData.val().length > 0" },
+          "subject": { ".validate": "newData.isString() && newData.val().length > 0" },
+          "description": { ".validate": "newData.isString()" },
+          "downloadURL": { ".validate": "newData.isString()" },
+          "professor": { ".validate": "newData.isString() && newData.val().length > 0" },
+          "timestamp": { ".validate": "newData.isNumber() || newData.val() === 'TIMESTAMP'" },
+          "uploadedBy": { ".validate": "newData.isString()" }
+        }
+      },
+
+      "quiz_attempts": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "$quizId": {
+            "$userId": {
+                ".read": "auth != null && (auth.uid === $userId || 
+                         root.child('users').child(auth.uid).child('role').val() === 'teacher')",
+                ".write": "auth != null && auth.uid === $userId",
+                ".validate": "newData.hasChildren(['startTime', 'status'])",
+                "status": {
+                    ".validate": "newData.val() === 'in_progress' || newData.val() === 'completed'"
+                }
+            }
+        }
+    }
+
+    }
+} 

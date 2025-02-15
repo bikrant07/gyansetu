@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 9 Labs | Virtual Science Labs</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/class9.css">
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+    <nav class="top-nav">
+        <div class="nav-content">
+            <div class="logo">🔬 Virtual Science Labs</div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="class9.html" class="active">Class 9</a>
+                <a href="class10.html">Class 10</a>
+                <a href="class11.html">Class 11</a>
+                <a href="class12.html">Class 12</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="subject-tabs">
+        <button class="tab-btn active" data-subject="physics">Physics</button>
+        <button class="tab-btn" data-subject="chemistry">Chemistry</button>
+        <button class="tab-btn" data-subject="biology">Biology</button>
+    </div>
+    
+    <div class="subject-content active" id="physics">
+        <div class="subject-header">
+            <h2>Physics Experiments</h2>
+            <p>Explore experiments related to laws of motion, reflection, and more.</p>
+        </div>
+        
+        <div class="overall-progress-container physics-progress" style="display: block;">
+            <h3>Physics Experiments Progress</h3>
+            <div class="overall-progress-bar">
+                <div class="progress" id="physicsProgress"></div>
+            </div>
+            <p id="physicsProgressText">Progress: 0%</p>
+        </div>
+
+        <div class="experiments-grid">
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">📐</div>
+                    <span class="experiment-number">Experiment 1</span>
+                </div>
+                <h3>Laws of Reflection</h3>
+                <p>Study reflection of light using plane mirrors and optical bench.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 30 mins</span>
+                    <span class="difficulty">Beginner</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/physics/class9_physics1.html" class="btn-primary">Start Experiment</a>
+                    <a href="../simulations/physics/reflection.html" class="btn-secondary">View Simulation</a>
+                </div>
+            </div>
+
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">🌊</div>
+                    <span class="experiment-number">Experiment 2</span>
+                </div>
+                <h3>Archimedes Principle</h3>
+                <p>Verify the principle of buoyancy and understand fluid dynamics.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 45 mins</span>
+                    <span class="difficulty">Intermediate</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/physics/class9_physics2.html" class="btn-primary">Start Experiment</a>
+                    <a href="../simulations/physics/archimedes.html" class="btn-secondary">View Simulation</a>
+                </div>
+            </div>
+            <!-- Add more experiment cards as needed -->
+        </div>
+    </div>
+
+    <div class="subject-content" id="chemistry">
+        <div class="subject-header">
+            <h2>Chemistry Experiments</h2>
+            <p>Explore chemical reactions, properties of substances, and laboratory techniques.</p>
+        </div>
+        
+        <div class="overall-progress-container chemistry-progress" style="display: none;">
+            <h3>Chemistry Experiments Progress</h3>
+            <div class="overall-progress-bar">
+                <div class="progress" id="chemistryProgress"></div>
+            </div>
+            <p id="chemistryProgressText">Progress: 0%</p>
+        </div>
+
+        <div class="experiments-grid">
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">🧪</div>
+                    <span class="experiment-number">Experiment 1</span>
+                </div>
+                <h3>Properties of Acids and Bases</h3>
+                <p>Study the chemical properties and reactions of acids and bases.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 40 mins</span>
+                    <span class="difficulty">Beginner</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/chemistry/class9_chemistry1.html" class="btn-primary">Start Experiment</a>
+                    <a href="../simulations/chemistry/acids.html" class="btn-secondary">View Simulation</a>
+                </div>
+            </div>
+
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">⚗️</div>
+                    <span class="experiment-number">Experiment 2</span>
+                </div>
+                <h3>Separation Techniques</h3>
+                <p>Learn different methods to separate mixtures and compounds.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 35 mins</span>
+                    <span class="difficulty">Intermediate</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/chemistry/class9_chemistry2.html" class="btn-primary">Start Experiment</a>
+                    <button class="btn-secondary">View Theory</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="subject-content" id="biology">
+        <div class="subject-header">
+            <h2>Biology Experiments</h2>
+            <p>Discover the fascinating world of cells, tissues, and living organisms.</p>
+        </div>
+        
+        <div class="overall-progress-container biology-progress" style="display: none;">
+            <h3>Biology Experiments Progress</h3>
+            <div class="overall-progress-bar">
+                <div class="progress" id="biologyProgress"></div>
+            </div>
+            <p id="biologyProgressText">Progress: 0%</p>
+        </div>
+
+        <div class="experiments-grid">
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">🔬</div>
+                    <span class="experiment-number">Experiment 1</span>
+                </div>
+                <h3>Plant and Animal Cells</h3>
+                <p>Observe and compare the structures of plant and animal cells.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 35 mins</span>
+                    <span class="difficulty">Beginner</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/biology/class9_biology1.html" class="btn-primary">Start Experiment</a>
+                    <a href="../simulations/biology/cell_structure.html" class="btn-secondary">View Simulation</a>
+                </div>
+            </div>
+
+            <div class="experiment-card">
+                <div class="experiment-header">
+                    <div class="experiment-icon">🌊</div>
+                    <span class="experiment-number">Experiment 2</span>
+                </div>
+                <h3>Plant Tissues</h3>
+                <p>Study different types of plant tissues and their functions.</p>
+                <div class="experiment-meta">
+                    <span class="duration"><i class="far fa-clock"></i> 45 mins</span>
+                    <span class="difficulty">Intermediate</span>
+                </div>
+                <div class="experiment-actions">
+                    <a href="../experiments/biology/class9_biology2.html" class="btn-primary">Start Experiment</a>
+                    <button class="btn-secondary">View Theory</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/experiments.js"></script>
+</body>
+</html>

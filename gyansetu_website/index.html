@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GYANSETU</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/styles/main.css" />
+    <link rel="stylesheet" href="assets/styles/navbar.css" />
+    <link rel="stylesheet" href="assets/styles/chatbot.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+
+    <!-- Swiper JS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Google Translate -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link rel="stylesheet" href="assets/styles/chatbot.css" />
+
+    <!-- Add this in the head section -->
+    <script src="https://googleapis.dev/nodejs/generativeai/latest/index.js"></script>
+
+    <style>
+      body {
+        background-color: var(--primary-light);
+      }
+
+      .monitor-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 80px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        color: #333;
+        cursor: pointer;
+        z-index: 9998;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .monitor-icon i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .monitor-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+
+      .popup-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+      }
+
+      .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        background-color: #fff;
+        padding: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+
+      .close-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: #333;
+        cursor: pointer;
+      }
+
+      .info-item {
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+      }
+
+      .info-item:hover {
+        background-color: #ebebeb;
+      }
+
+      .icon {
+        font-size: 24px;
+        margin-right: 20px;
+        color: #333;
+      }
+
+      .label {
+        font-weight: 500;
+        color: #333;
+        font-size: 18px;
+      }
+
+      .value {
+        color: #666;
+        font-size: 18px;
+        margin-left: auto;
+      }
+
+      .dns-info,
+      .connectivity-tips,
+      .network-quality {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #ddd;
+      }
+
+      .connectivity-tips ul {
+        padding-left: 30px;
+      }
+
+      .connectivity-tips li {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      #qualityIndicator {
+        font-weight: 500;
+        font-size: 24px;
+        text-align: center;
+        padding: 20px;
+        border-radius: 4px;
+        color: #fff;
+        transition: background-color 0.3s ease;
+      }
+
+      .excellent {
+        background-color: #4caf50;
+      }
+
+      .good {
+        background-color: #ffc107;
+      }
+
+      .poor {
+        background-color: #f44336;
+      }
+
+      .chat-history {
+        padding: 15px;
+        height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .user-message, .assistant-message {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        margin: 5px 0;
+      }
+
+      .user-message {
+        background-color: #1a73e8;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+      }
+
+      .assistant-message {
+        background-color: #f1f3f4;
+        color: #202124;
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 5px;
+      }
+
+      .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #90909090;
+        border-radius: 50%;
+        animation: bounce 1.5s infinite;
+      }
+
+      .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+      .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+
+      .user-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 10px 0;
+        resize: none;
+        font-family: inherit;
+      }
+
+
+      /* Add these styles to your existing CSS */
+      .form-group {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input.error,
+      .form-group textarea.error {
+        border-color: #ff4444;
+      }
+
+      .error-message {
+        color: #ff4444;
+        font-size: 12px;
+        margin-top: 5px;
+        display: none;
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #1a73e8;
+      }
+
+      /* Add animations for hero section */
+      .hero-content {
+        animation: fadeInUp 1s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Add hover effects for feature cards */
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Add animations for statistics section */
+      .stat-item {
+        animation: fadeIn 1s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Add hover effects for about items */
+      .about-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Add animations for how-it-works steps */
+      .step {
+        animation: fadeInUp 1s ease-out;
+      }
+
+      /* Add hover effects for contact form button */
+      .submit-btn:hover {
+        background-image: linear-gradient(135deg, #2e7d32 0%, #1a5e20 100%);
+      }
+
+      /* Add animations for footer sections */
+      .footer-section {
+        animation: fadeIn 1s ease-out;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    <!-- Add EmailJS before your contact.js script -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  </head>
+  <body>
+    <!-- Add this right after body tag opens -->
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+
+    <!-- Navbar will be injected here -->
+    <div id="navbar-container"></div>
+
+    <!-- Connection Status Banner -->
+    <div id="connection-status" class="connection-banner hidden">
+      <div class="banner-content">
+        <i class="fas fa-wifi"></i>
+        <span id="connection-message">Checking connection...</span>
+      </div>
+      <button
+        class="close-banner"
+        onclick="hideBanner()"
+        title="Close notification"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Welcome to GyanSetu</h1>
+        <p>Bridging the educational gap in rural India through technology</p>
+        <a href="#features" class="cta-button">Get Started</a>
+      </div>
+    </section>
+
+     <!-- Features Section -->
+     <section id="features" class="features">
+      <h2>Our Features</h2>
+      <div class="swiper-container">
+        <!-- Add loading placeholders -->
+        <div class="feature-card-placeholder" id="loading-placeholder"></div>
+
+        <div class="swiper-wrapper" style="visibility: hidden">
+          <div class="swiper-slide">
+            <div class="feature-card"><a href="/virtual_classroom/index.html" style="text-decoration: none; color: inherit;">
+              <img
+                src="assets/images/virtual-classroom.webp"
+                alt="Virtual Classroom"
+                loading="lazy"
+              />
+              <h3>Virtual Classroom</h3>
+              <p>
+                Interactive online learning experience with real-time teacher
+                interaction
+              </p>
+            </div></a>
+          </div>
+          <div class="swiper-slide">
+            <div class="feature-card">
+              <img
+                src="assets/images/offline-access.webp"
+                alt="Offline Access"
+                loading="lazy"
+              />
+              <h3>Offline Access</h3>
+              <p>
+                Download content for offline learning when connectivity is
+                limited
+              </p>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="feature-card">
+              <img src="assets/images/low-bandwidth.webp" alt="Low Bandwidth" loading="lazy"/>
+              <h3>Low Bandwidth Mode</h3>
+              <p>
+                Optimized content delivery for areas with limited internet
+                connectivity
+              </p>
+            </div>
+          </div></a>
+          <div class="swiper-slide">
+            <div class="feature-card chatbot-feature" style="cursor: pointer;" data-action="open-chatbot">
+                <img src="assets/images/ai-chatbot.webp" alt="AI Chatbot" loading="lazy" />
+                <h3>AI Chatbot</h3>
+                <p>
+                    24/7 learning assistance powered by advanced artificial
+                    intelligence
+                </p>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="feature-card"><a href="/e_library/index.html" style="text-decoration: none; color: inherit;">
+              <img src="assets/images/e-library.webp" alt="E-Library" loading="lazy" />
+              <h3>E-Library</h3>
+              <p>
+                Vast collection of digital books, journals, and educational
+                resources
+              </p>
+            </div>
+          </div></a>
+          <div class="swiper-slide">
+            <div class="feature-card"><a href="/materials_page/materials.html" style="text-decoration: none; color: inherit;">
+              <img src="assets/images/quizzes.webp" alt="Tests & Quizzes" loading="lazy" />
+              <h3>Tests & Quizzes</h3>
+              <p>
+                Regular assessments and practice tests to track your progress
+              </p>
+            </div>
+          </div>
+        </div></a>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+      <div class="stat-container">
+        <div class="stat-item">
+          <i class="fas fa-users"></i>
+          <h3>10,000+</h3>
+          <p>Students Enrolled</p>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-book-reader"></i>
+          <h3>500+</h3>
+          <p>Courses Available</p>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>100+</h3>
+          <p>Rural Centers</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <div class="about-container">
+        <div class="about-content">
+          <h2>About GyanSetu</h2>
+          <p>
+            Bridging the educational divide in rural India through innovative
+            technology solutions. Our platform ensures quality education reaches
+            every corner of the country.
+          </p>
+          <div class="about-grid">
+            <div class="about-item">
+              <i class="fas fa-network-wired"></i>
+              <h3>Low Bandwidth Support</h3>
+              <p>Optimized for areas with limited internet connectivity</p>
+            </div>
+            <div class="about-item">
+              <i class="fas fa-language"></i>
+              <h3>Multi-lingual</h3>
+              <p>Content available in multiple regional languages</p>
+            </div>
+            <div class="about-item">
+              <i class="fas fa-mobile-alt"></i>
+              <h3>Mobile First</h3>
+              <p>Designed to work seamlessly on all devices</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+      <h2>How GyanSetu Works</h2>
+      <div class="steps-container">
+        <div class="step">
+          <div class="step-number">1</div>
+          <i class="fas fa-user-plus"></i>
+          <h3>Create Account</h3>
+          <p>Sign in as a student or teacher</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <i class="fas fa-book-reader"></i>
+          <h3>Choose Courses</h3>
+          <p>Select from various subjects</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <i class="fas fa-graduation-cap"></i>
+          <h3>Start Learning</h3>
+          <p>Learn at your own pace</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+      <div class="contact-container">
+        <div class="contact-info">
+          <h2>Get in Touch</h2>
+          <p>Have questions? We're here to help!</p>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <p>support@gyansetu.com</p>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone"></i>
+              <p>+91 9279098628</p>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <form id="contact-form">
+            <div class="form-group">
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Your Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Your Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <textarea
+                id="message"
+                name="message"
+                placeholder="Your Message"
+                required
+              ></textarea>
+            </div>
+            <button type="button" class="submit-btn" onclick="sendEmail()">
+              <span class="btn-text">Send Message</span>
+              <span class="loading-spinner" style="display: none">
+                <i class="fas fa-spinner fa-spin"></i>
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>GyanSetu</h3>
+          <p>Bridging the educational gap in rural India</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="quick_links/about_us.html">About Us</a></li>
+            <li><a href="#">Courses</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="quick_links/help_center.html">Help Center</a></li>
+            <li><a href="quick_links/privacy_policy.html">Privacy Policy</a></li>
+            <li><a href="quick_links/terms_of_service.html">Terms of Service</a></li>
+            <li><a href="quick_links/faqs.html">FAQs</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 GyanSetu. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="components/navbar.js"></script>
+    <script>
+      // Show loading placeholder
+      const loadingPlaceholder = document.getElementById("loading-placeholder");
+      const swiperWrapper = document.querySelector(".swiper-wrapper");
+
+      // Initialize Swiper with enhanced animation
+      const swiper = new Swiper(".swiper-container", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        preloadImages: true,
+        watchSlidesProgress: true,
+        speed: 800,
+        effect: "slide",
+        centeredSlides: false,
+        slidesPerGroup: 1,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+          dynamicBullets: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+          hideOnClick: false,
+          disabledClass: "swiper-button-disabled",
+        },
+        breakpoints: {
+          // Mobile
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
+          // Tablet
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+          },
+          // Desktop
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            slidesPerGroup: 1,
+          },
+        },
+        on: {
+          init: function () {
+            // Hide placeholder and show content when ready
+            loadingPlaceholder.style.display = "none";
+            swiperWrapper.style.visibility = "visible";
+
+            // Initialize slides with staggered animation
+            document
+              .querySelectorAll(".feature-card")
+              .forEach((card, index) => {
+                setTimeout(() => {
+                  card.style.animation = "slideIn 0.5s ease forwards";
+                }, index * 100);
+              });
+          },
+          slideChangeTransitionStart: function () {
+            const activeSlides = [];
+            for (let i = 0; i < this.params.slidesPerView; i++) {
+              const slide = this.slides[this.activeIndex + i];
+              if (slide) activeSlides.push(slide);
+            }
+
+            // Smooth transition for visible slides
+            activeSlides.forEach((slide) => {
+              slide.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            });
+          },
+          slideChangeTransitionEnd: function () {
+            // Reset transition after slide change
+            this.slides.forEach((slide) => {
+              slide.style.transition = "";
+            });
+          },
+        },
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+      });
+
+      // Preload images
+      function preloadImages() {
+        const images = document.querySelectorAll(".feature-card img");
+        images.forEach((img) => {
+          const src = img.getAttribute("src");
+          if (src) {
+            const image = new Image();
+            image.src = src;
+          }
+        });
+      }
+
+      // Call preload function
+      window.addEventListener("load", preloadImages);
+
+      // Update the connection monitoring code
+      function updateConnectionStatus() {
+        const banner = document.getElementById("connection-status");
+        const message = document.getElementById("connection-message");
+
+        // Check if banner was manually closed recently
+        const bannerClosedTime = localStorage.getItem("bannerClosedTime");
+        const currentTime = new Date().getTime();
+
+        // If banner was closed in the last 5 minutes, don't show it
+        if (
+          bannerClosedTime &&
+          currentTime - parseInt(bannerClosedTime) < 300000
+        ) {
+          return;
+        }
+
+        if (navigator.onLine) {
+          const connection =
+            navigator.connection ||
+            navigator.mozConnection ||
+            navigator.webkitConnection;
+          if (connection) {
+            const speed = connection.downlink; // Mbps
+            if (speed < 1) {
+              banner.classList.remove("hidden");
+              message.textContent =
+                "Slow connection detected. Some features may be limited.";
+              banner.className = "connection-banner warning";
+            } else {
+              banner.classList.add("hidden");
+            }
+          }
+        } else {
+          banner.classList.remove("hidden");
+          message.textContent =
+            "You are offline. Some features may be unavailable.";
+          banner.className = "connection-banner error";
+        }
+      }
+
+      function hideBanner() {
+        const banner = document.getElementById("connection-status");
+        banner.classList.add("hidden");
+
+        // Store the time when banner was closed
+        localStorage.setItem(
+          "bannerClosedTime",
+          new Date().getTime().toString()
+        );
+
+        // If connection is offline, stop checking temporarily
+        if (!navigator.onLine) {
+          clearInterval(connectionCheckInterval);
+          // Resume checking after 5 minutes
+          setTimeout(() => {
+            connectionCheckInterval = setInterval(updateConnectionStatus, 5000);
+          }, 300000);
+        }
+      }
+
+      // Store interval ID to control it
+      let connectionCheckInterval;
+
+      // Clear stored time on page load if it's older than 5 minutes
+      window.addEventListener("load", () => {
+        const bannerClosedTime = localStorage.getItem("bannerClosedTime");
+        if (bannerClosedTime) {
+          const currentTime = new Date().getTime();
+          if (currentTime - parseInt(bannerClosedTime) >= 300000) {
+            localStorage.removeItem("bannerClosedTime");
+          }
+        }
+      });
+
+      window.addEventListener("online", updateConnectionStatus);
+      window.addEventListener("offline", updateConnectionStatus);
+      connectionCheckInterval = setInterval(updateConnectionStatus, 5000);
+      updateConnectionStatus();
+    </script>
+    <script>
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "",
+        authDomain: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+        measurementId: "",
+      };
+
+      // Initialize Firebase only if it hasn't been initialized
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+    </script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script src="assets/scripts/contact.js"></script>
+
+    <!-- Chatbot Floating Icon -->
+    <div id="chatbot" class="chatbot-icon">
+      <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div id="chatbotModal" class="chatbot-modal hidden">
+      <div class="chatbot-header">
+        <h2>Ask AI</h2>
+        <div class="header-buttons">
+          <button id="voiceChat" class="header-btn" title="Voice Chat">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <button id="enlargeChat" class="header-btn" title="Toggle fullscreen">
+            <i class="fas fa-expand"></i>
+          </button>
+          <button id="closeChatbot" class="header-btn" title="Close chat">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="chatbot-body">
+        <div id="chatHistory" class="chat-history"></div>
+        <div class="status-indicator" id="voiceStatus"></div>
+        <div class="input-area">
+          <textarea
+            id="userInput"
+            class="user-input"
+            placeholder="Type your message..."
+          ></textarea>
+          <button id="sendMessage" class="send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chatbot Functions -->
+    <script type="module">
+      document.addEventListener('DOMContentLoaded', () => {
+        const chatbotIcon = document.getElementById('chatbot');
+        const chatbotModal = document.getElementById('chatbotModal');
+        const closeChatbot = document.getElementById('closeChatbot');
+        const sendMessage = document.getElementById('sendMessage');
+        const userInput = document.getElementById('userInput');
+        const chatHistory = document.getElementById('chatHistory');
+        
+        // Initialize conversation history
+        let conversationHistory = [];
+
+        // Chatbot UI Controls
+        if (chatbotIcon) {
+            chatbotIcon.onclick = function() {
+                if (chatbotModal) {
+                    chatbotModal.classList.remove('hidden');
+                    userInput.focus();
+                }
+            };
+        }
+        
+        if (closeChatbot) {
+            closeChatbot.onclick = function() {
+                if (chatbotModal) {
+                    chatbotModal.classList.add('hidden');
+                    conversationHistory = []; // Reset conversation
+                    chatHistory.innerHTML = ''; // Clear chat display
+                }
+            };
+        }
+
+        // Handle message sending
+        if (sendMessage) {
+            sendMessage.onclick = handleSendMessage;
+        }
+
+        // Handle Enter key
+        if (userInput) {
+            userInput.onkeypress = function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            };
+        }
+
+        async function handleSendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            appendMessage('user', message);
+            userInput.value = '';
+
+            // Show typing indicator
+            const typingIndicator = appendMessage('assistant', '...', 'typing');
+
+            try {
+                const response = await callOpenAIAPI(message);
+                typingIndicator.remove();
+                
+                // Sanitize the response to remove unwanted characters
+                const sanitizedResponse = sanitizeResponse(response);
+                appendMessage('assistant', sanitizedResponse);
+                
+                // Scroll to bottom
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } catch (error) {
+                console.error('Error calling OpenAI API:', error);
+                typingIndicator.remove();
+                appendMessage('assistant', `Sorry, I encountered an error: ${error.message}`);
+            }
+        }
+
+        // Function to sanitize the AI response
+        function sanitizeResponse(response) {
+            // Remove unwanted characters like **, #
+            return response.replace(/[\*\#]/g, '').trim();
+        }
+
+        function appendMessage(sender, text, className = '') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message ${className}`;
+            
+            if (className === 'typing') {
+                messageDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            return messageDiv;
+        }
+
+        async function callOpenAIAPI(message) {
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: conversationHistory
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    conversationHistory.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: data.response }
+                    );
+                    
+                    if (conversationHistory.length > 10) {
+                        conversationHistory = conversationHistory.slice(-10);
+                    }
+                    
+                    return data.response;
+                } else {
+                    throw new Error(data.error || 'Invalid API response');
+                }
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw new Error(`Failed to get response: ${error.message}`);
+            }
+        }
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', (e) => {
+            if (chatbotModal && !chatbotModal.contains(e.target) && !chatbotIcon.contains(e.target)) {
+                chatbotModal.classList.add('hidden');
+            }
+        });
+        
+        // Close chatbot when pressing Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && chatbotModal) {
+                chatbotModal.classList.add('hidden');
+            }
+        });
+
+        // Prevent clicks inside chatbot from closing it
+        chatbotModal?.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        const voiceChatBtn = document.getElementById('voiceChat');
+        const voiceStatus = document.getElementById('voiceStatus');
+        let isVoiceChatActive = false;
+        let audioService = null;
+
+        // Initialize audio service
+        async function initializeAudioService() {
+            try {
+                const response = await import('./audioService.js');
+                audioService = response.default;
+                return true;
+            } catch (error) {
+                console.error('Error initializing audio service:', error);
+                return false;
+            }
+        }
+
+        // Voice chat button handler
+        if (voiceChatBtn) {
+            voiceChatBtn.onclick = async function() {
+                if (!audioService) {
+                    const initialized = await initializeAudioService();
+                    if (!initialized) {
+                        appendMessage('assistant', 'Voice chat initialization failed. Please try again.');
+                        return;
+                    }
+                }
+
+                if (!isVoiceChatActive) {
+                    try {
+                        await startVoiceChat();
+                        isVoiceChatActive = true;
+                        voiceChatBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                        voiceChatBtn.title = 'Stop Voice Chat';
+                        voiceStatus.textContent = 'Listening...';
+                    } catch (error) {
+                        appendMessage('assistant', 'Failed to start voice chat: ' + error.message);
+                    }
+                } else {
+                    stopVoiceChat();
+                }
+            };
+        }
+
+        async function startVoiceChat() {
+            try {
+                await audioService.startRecording(
+                    // Transcript handler
+                    async (transcript) => {
+                        if (transcript.trim()) {
+                            appendMessage('user', transcript);
+                            
+                            // Show typing indicator
+                            const typingIndicator = appendMessage('assistant', '...', 'typing');
+                            
+                            try {
+                                const response = await callOpenAIAPI(transcript);
+                                typingIndicator.remove();
+                                appendMessage('assistant', response);
+                                
+                                // Convert response to speech
+                                await audioService.speakResponse(response);
+                            } catch (error) {
+                                typingIndicator.remove();
+                                appendMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+                            }
+                        }
+                    },
+                    // Silence handler
+                    () => {
+                        voiceStatus.textContent = 'Silence detected...';
+                    }
+                );
+            } catch (error) {
+                throw new Error('Failed to start voice chat: ' + error.message);
+            }
+        }
+
+        function stopVoiceChat() {
+            if (audioService) {
+                audioService.stopRecording();
+                isVoiceChatActive = false;
+                voiceChatBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                voiceChatBtn.title = 'Start Voice Chat';
+                voiceStatus.textContent = '';
+            }
+        }
+
+        // Update close chatbot handler to also stop voice chat
+        if (closeChatbot) {
+            closeChatbot.onclick = function() {
+                if (chatbotModal) {
+                    chatbotModal.classList.add('hidden');
+                    conversationHistory = [];
+                    chatHistory.innerHTML = '';
+                    stopVoiceChat();
+                }
+            };
+        }
+      });
+    </script>
+
+    <!-- Add this HTML for the floating button and popup container -->
+    <div class="monitor-icon" onclick="openPopup()">
+      <i class="fas fa-signal"></i>
+    </div>
+
+    <div class="popup-container" id="popupContainer">
+      <div class="popup-content">
+        <div class="close-icon" onclick="closePopup()">
+          <i class="fas fa-times"></i>
+        </div>
+        <h1>Network Monitor</h1>
+
+        <!-- Network Quality Section -->
+        <div class="network-quality">
+          <h2>Network Quality</h2>
+          <div id="qualityIndicator"></div>
+        </div>
+
+        <!-- Network Information Section -->
+        <div class="network-info">
+          <div class="info-item" id="connectionTypeItem">
+            <i class="icon fas fa-signal"></i>
+            <span class="label">Connection type:</span>
+            <span class="value" id="connectionType">N/A</span>
+          </div>
+          <div class="info-item" id="effectiveTypeItem">
+            <i class="icon fas fa-wifi"></i>
+            <span class="label">Effective connection type:</span>
+            <span class="value" id="effectiveType">N/A</span>
+          </div>
+          <div class="info-item" id="downlinkItem">
+            <i class="icon fas fa-download"></i>
+            <span class="label">Estimated downlink speed (Mbps):</span>
+            <span class="value" id="downlink">N/A</span>
+          </div>
+          <div class="info-item" id="uplinkItem">
+            <i class="icon fas fa-upload"></i>
+            <span class="label">Estimated uplink speed (Mbps):</span>
+            <span class="value" id="uplink">N/A</span>
+          </div>
+          <div class="info-item" id="rttItem">
+            <i class="icon fas fa-exchange-alt"></i>
+            <span class="label">Round-trip time (ms):</span>
+            <span class="value" id="rtt">N/A</span>
+          </div>
+        </div>
+
+        <!-- Server Information Section -->
+        <div class="server-info">
+          <div class="info-item">
+            <i class="icon fas fa-server"></i>
+            <span class="label">Server:</span>
+            <span class="value" id="server"></span>
+          </div>
+        </div>
+
+        <!-- Connectivity Tips Section -->
+        <div class="connectivity-tips">
+          <h2>Connectivity Tips</h2>
+          <ul id="connectivityTips">
+            <!-- Tips will be dynamically populated based on network quality -->
+          </ul>
+        </div>
+
+        <!-- Network Latency Section -->
+        <div class="network-latency">
+          <div class="info-item">
+            <i class="icon fas fa-stopwatch"></i>
+            <span class="label">Network Latency:</span>
+            <span class="value" id="latency"></span>
+          </div>
+        </div>
+
+        <!-- Download Capability Section -->
+        <div class="download-info">
+          <h2>Download Capability</h2>
+          <div id="downloadCapability"></div>
+        </div>
+
+        <div class="network-actions">
+          <button id="refreshBtn" onclick="updateNetworkInfo()">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+        </div>
+        <div id="lastUpdated" class="last-updated"></div>
+      </div>
+    </div>
+
+    <script>
+      // Network Monitor Functions
+      function openPopup() {
+        document.getElementById('popupContainer').style.display = 'block';
+        updateNetworkInfo(); // Update info when popup opens
+      }
+
+      function closePopup() {
+        document.getElementById('popupContainer').style.display = 'none';
+      }
+
+      function updateNetworkInfo() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+        if (connection) {
+          updateInfoItem('connectionType', connection.type || 'unknown');
+          updateInfoItem('effectiveType', connection.effectiveType || 'unknown');
+          updateInfoItem('downlink', connection.downlink ? connection.downlink.toFixed(2) : 'unknown');
+          updateInfoItem('uplink', connection.uplink ? connection.uplink.toFixed(2) : 'unknown');
+          updateInfoItem('rtt', connection.rtt || 'unknown');
+          
+          // Update network quality indicator
+          updateNetworkQuality();
+          // Update connectivity tips
+          updateConnectivityTips(connection.effectiveType);
+        } else {
+          // Fallback for unsupported browsers
+          document.getElementById('connectionType').textContent = 'Not available';
+          document.getElementById('effectiveType').textContent = 'Not available';
+          document.getElementById('downlink').textContent = 'Not available';
+          document.getElementById('uplink').textContent = 'Not available';
+          document.getElementById('rtt').textContent = 'Not available';
+          
+          // Update network quality indicator
+          const qualityIndicator = document.getElementById('qualityIndicator');
+          if (qualityIndicator) {
+            qualityIndicator.textContent = 'Network information not available in this browser';
+            qualityIndicator.className = 'warning';
+          }
+        }
+
+        updateLastUpdated();
+      }
+
+      function updateInfoItem(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = value;
+        }
+      }
+
+      function showFallbackMessage(message) {
+        const container = document.querySelector('.popup-content');
+        if (!container.querySelector('.fallback-message')) {
+          const fallbackMessage = document.createElement('div');
+          fallbackMessage.className = 'fallback-message';
+          fallbackMessage.textContent = message;
+          container.appendChild(fallbackMessage);
+        }
+      }
+
+      function updateLastUpdated() {
+        const lastUpdatedElement = document.getElementById('lastUpdated');
+        if (lastUpdatedElement) {
+          const currentTime = new Date().toLocaleString();
+          lastUpdatedElement.textContent = `Last updated: ${currentTime}`;
+        }
+      }
+
+      function updateNetworkQuality() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const qualityIndicator = document.getElementById('qualityIndicator');
+        const downloadCapability = document.getElementById('downloadCapability');
+
+        if (!navigator.onLine) {
+          qualityIndicator.textContent = 'Offline';
+          qualityIndicator.className = 'poor';
+          downloadCapability.innerHTML = `
+            <p>You are currently offline. Please check your internet connection.</p>
+          `;
+          return;
+        }
+
+        if (connection) {
+          const downlink = connection.downlink;
+          const effectiveType = connection.effectiveType;
+
+          if (downlink >= 5 || effectiveType === '4g') {
+            qualityIndicator.textContent = 'Excellent';
+            qualityIndicator.className = 'excellent';
+            downloadCapability.innerHTML = `
+              <p>Your connection is suitable for:</p>
+              <ul>
+                <li>HD Video streaming</li>
+                <li>Large file downloads</li>
+                <li>Video conferencing</li>
+                <li>Interactive content</li>
+              </ul>
+            `;
+          } else if (downlink >= 2 || effectiveType === '3g') {
+            qualityIndicator.textContent = 'Good';
+            qualityIndicator.className = 'good';
+            downloadCapability.innerHTML = `
+              <p>Your connection is suitable for:</p>
+              <ul>
+                <li>Standard quality video</li>
+                <li>Basic file downloads</li>
+                <li>Audio streaming</li>
+                <li>Basic interactive features</li>
+              </ul>
+            `;
+          } else {
+            qualityIndicator.textContent = 'Poor';
+            qualityIndicator.className = 'poor';
+            downloadCapability.innerHTML = `
+              <p>Your connection may be limited for:</p>
+              <ul>
+                <li>Text and basic images only</li>
+                <li>Limited interactive features</li>
+                <li>Offline mode recommended</li>
+              </ul>
+            `;
+          }
+        } else {
+          qualityIndicator.textContent = 'Unknown';
+          qualityIndicator.className = '';
+        }
+      }
+
+      function updateConnectivityTips(connectionType) {
+        const tipsList = document.getElementById('connectivityTips');
+        tipsList.innerHTML = ''; // Clear existing tips
+
+        const commonTips = [
+          'Keep your browser and app updated',
+          'Clear browser cache periodically',
+          'Use offline mode when available'
+        ];
+
+        const specificTips = {
+          '4g': [
+            'Ideal for all features including video streaming',
+            'Enable HD content for better learning experience',
+            'Participate in live sessions'
+          ],
+          '3g': [
+            'Consider reducing video quality settings',
+            'Download content for offline use when possible',
+            'Use text-based resources when bandwidth is limited'
+          ],
+          '2g': [
+            'Switch to offline mode when possible',
+            'Disable images to save bandwidth',
+            'Focus on text-based content',
+            'Download materials when better connection is available'
+          ],
+          'slow-2g': [
+            'Use offline mode exclusively',
+            'Minimize data usage',
+            'Access text-only content',
+            'Wait for better connection to download materials'
+          ]
+        };
+
+        // Add connection-specific tips
+        const tips = specificTips[connectionType] || specificTips['2g'];
+        tips.forEach(tip => {
+          const li = document.createElement('li');
+          li.textContent = tip;
+          tipsList.appendChild(li);
+        });
+
+        // Add common tips
+        commonTips.forEach(tip => {
+          const li = document.createElement('li');
+          li.textContent = tip;
+          tipsList.appendChild(li);
+        });
+      }
+
+      // Fix the accessibility issue with the enlarge chat button
+      document.addEventListener('DOMContentLoaded', () => {
+        const enlargeChat = document.getElementById('enlargeChat');
+        if (enlargeChat) {
+          enlargeChat.setAttribute('title', 'Toggle fullscreen chat');
+          enlargeChat.setAttribute('aria-label', 'Toggle fullscreen chat');
+        }
+      });
+
+      // Add event listeners when the document loads
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initial network info update
+        updateNetworkInfo();
+        
+        // Update network info when online/offline status changes
+        window.addEventListener('online', updateNetworkInfo);
+        window.addEventListener('offline', updateNetworkInfo);
+        
+        // Update network info periodically
+        setInterval(updateNetworkInfo, 5000);
+        
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+          const popup = document.getElementById('popupContainer');
+          const icon = document.querySelector('.monitor-icon');
+          if (popup && !popup.contains(e.target) && !icon.contains(e.target)) {
+            closePopup();
+          }
+        });
+        
+        // Close popup when pressing Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closePopup();
+          }
+        });
+      });
+    </script>
+    <!-- <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then((registration) => {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch((error) => {
+              console.error('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script> -->
+
+    <!-- Add this script right after your existing chatbot script -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatbotIcon = document.getElementById('chatbot');
+        const chatbotModal = document.getElementById('chatbotModal');
+        const enlargeChat = document.getElementById('enlargeChat');
+        const closeChatbot = document.getElementById('closeChatbot');
+        
+        // Function to open chatbot
+        function openChatbot(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (chatbotModal) {
+                chatbotModal.classList.remove('hidden');
+                const userInput = document.getElementById('userInput');
+                if (userInput) {
+                    userInput.focus();
+                }
+            }
+        }
+        
+        // Add click handler for chatbot icon
+        if (chatbotIcon) {
+            chatbotIcon.onclick = openChatbot;
+        }
+        
+        // Add click handler for feature card
+        document.addEventListener('click', function(e) {
+            const chatbotFeature = e.target.closest('.chatbot-feature[data-action="open-chatbot"]');
+            if (chatbotFeature) {
+                openChatbot(e);
+            }
+        });
+        
+        // Rest of your existing chatbot code...
+        if (enlargeChat) {
+            enlargeChat.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                chatbotModal.classList.toggle('fullscreen');
+                
+                // Update icon based on state
+                const icon = enlargeChat.querySelector('i');
+                if (chatbotModal.classList.contains('fullscreen')) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                    enlargeChat.setAttribute('title', 'Exit fullscreen');
+                } else {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                    enlargeChat.setAttribute('title', 'Enter fullscreen');
+                }
+                
+                // Scroll chat history to bottom after transition
+                setTimeout(() => {
+                    const chatHistory = document.getElementById('chatHistory');
+                    if (chatHistory) {
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+                }, 300);
+            };
+        }
+        
+        // Close chatbot
+        if (closeChatbot) {
+            closeChatbot.onclick = function() {
+                chatbotModal.classList.add('hidden');
+                // Reset fullscreen when closing
+                if (chatbotModal.classList.contains('fullscreen')) {
+                    enlargeChat.click();
+                }
+            };
+        }
+        
+
+        // Handle Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (chatbotModal.classList.contains('fullscreen')) {
+                    enlargeChat.click(); // Exit fullscreen first
+                } else {
+                    chatbotModal.classList.add('hidden'); // Then close if pressed again
+                }
+            }
+        });
+    });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+  </body>
+</html>

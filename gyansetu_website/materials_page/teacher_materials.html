@@ -1,0 +1,409 @@
+<div class="materials-container">
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="topic-content">
+            <i class="fas fa-book"></i>
+            Topic Content
+        </button>
+        <button class="tab-btn" data-tab="study-materials">
+            <i class="fas fa-file-alt"></i>
+            Study Materials
+        </button>
+        <!-- <button class="tab-btn" data-tab="quiz">
+            <i class="fas fa-question-circle"></i>
+            Quiz
+        </button> -->
+        <!-- <button class="tab-btn" data-tab="assignment">
+            <i class="fas fa-tasks"></i>
+            Assignment
+        </button> -->
+    </div>
+
+    <!-- Topic Content Tab -->
+    <div class="tab-content active" id="topic-content-tab">
+        <div class="content-header">
+            <h2><i class="fas fa-book-reader"></i> Topic Content Management</h2>
+            <p>Create and manage educational content for your students</p>
+        </div>
+
+        <div class="upload-section compact">
+            <div class="section-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Topic Content</h3>
+            </div>
+            <form id="topic-content-form" class="upload-form">
+                <div class="form-grid-compact">
+                    <div class="select-group">
+                        <div class="form-group">
+                            <label for="content-class">Class:</label>
+                            <select id="content-class" required>
+                                <option value="">Select Class</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-subject">Subject:</label>
+                            <select id="content-subject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Social Studies">Social Studies</option>
+                                <option value="Computer">Computer</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Languages">Languages</option>
+                                <option value="Technology">Technology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-topic">Topic:</label>
+                            <select id="content-topic" required>
+                                <option value="">Select Topic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group file-upload-compact">
+                        <label for="content-file">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Upload Content File</span>
+                            <small class="file-hint">Upload your content file in Markdown (.md) or Text (.txt) format</small>
+                        </label>
+                        <input type="file" id="content-file" required accept=".md,.txt">
+                    </div>
+                </div>
+
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-upload"></i> Upload Content
+                </button>
+            </form>
+        </div>
+
+        <div id="topic-content-list" class="content-list">
+            <!-- Topic contents will be listed here -->
+        </div>
+    </div>
+
+    <!-- Study Materials Tab -->
+    <div class="tab-content" id="study-materials-tab">
+        <div class="content-header">
+            <h2><i class="fas fa-file-alt"></i> Study Materials Management</h2>
+            <p>Upload and organize study materials for your students</p>
+        </div>
+
+        <div class="upload-section compact">
+            <div class="section-header">
+                <h3><i class="fas fa-plus-circle"></i> Upload New Study Material</h3>
+            </div>
+            <form id="study-material-form" class="upload-form">
+                <div class="form-grid-compact">
+                    <div class="select-group">
+                        <div class="form-group">
+                            <label for="material-class">Class:</label>
+                            <select id="material-class" required>
+                                <option value="">Select Class</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="material-subject">Subject:</label>
+                            <select id="material-subject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Social Studies">Social Studies</option>
+                                <option value="Computer">Computer</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Languages">Languages</option>
+                                <option value="Technology">Technology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="material-topic">Topic:</label>
+                            <select id="material-topic" required>
+                                <option value="">Select Topic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group file-upload-compact">
+                        <label for="material-file">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Upload Study Material</span>
+                            <small class="file-hint">Supported formats: PDF, DOC, DOCX, PPT, PPTX, etc.</small>
+                        </label>
+                        <input type="file" id="material-file" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-upload"></i> Upload Material
+                </button>
+            </form>
+        </div>
+
+        <div id="study-materials-list" class="content-list">
+            <!-- Study materials will be listed here -->
+        </div>
+    </div>
+
+    <!-- Quiz Tab -->
+    <!-- <div class="tab-content" id="quiz-tab">
+        <div class="content-header">
+            <h2><i class="fas fa-question-circle"></i> Quiz Management</h2>
+            <p>Create and manage quizzes for your students</p>
+        </div>
+
+        <div class="upload-section compact">
+            <div class="section-header">
+                <h3><i class="fas fa-plus-circle"></i> Create New Quiz</h3>
+            </div>
+            <form id="quiz-form" class="upload-form">
+                <div class="form-grid-compact">
+                    <div class="select-group">
+                        <div class="form-group">
+                            <label for="qa-class">Class:</label>
+                            <select id="qa-class" required>
+                                <option value="">Select Class</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="qa-subject">Subject:</label>
+                            <select id="qa-subject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Social Studies">Social Studies</option>
+                                <option value="Computer">Computer</option>
+                                <option value="Geography">Geography</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qa-title">Title:</label>
+                        <input type="text" id="qa-title" required placeholder="Enter quiz title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qa-description">Description:</label>
+                        <textarea id="qa-description" rows="3" required placeholder="Enter quiz description"></textarea>
+                    </div>
+                </div>
+
+                <div id="quiz-container">
+                    <div class="quiz-section">
+                        <div class="section-header">
+                            <h4><i class="fas fa-question-circle"></i> Quiz Questions</h4>
+                            <p class="section-description">Add multiple choice questions for your quiz</p>
+                        </div>
+                        
+                        <div id="questions-container">
+                             Questions will be added here dynamically -->
+                        <!-- </div>
+                        
+                        <div class="question-buttons">
+                            <button type="button" class="add-question-btn mcq">
+                                <i class="fas fa-list-ol"></i> Add MCQ Question
+                            </button>
+                            <button type="button" class="add-question-btn true-false">
+                                <i class="fas fa-toggle-on"></i> Add True/False Question
+                            </button>
+                            <button type="button" class="add-question-btn short">
+                                <i class="fas fa-paragraph"></i> Add Short Question
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="quiz-section">
+                        <div class="section-header">
+                            <h4><i class="fas fa-clock"></i> Quiz Timing</h4>
+                            <p class="section-description">Set when this quiz should be available to students</p>
+                        </div>
+                        
+                        <div class="form-grid-compact">
+                            <div class="form-group">
+                                <label for="quiz-start-time">Start Time:</label>
+                                <input type="datetime-local" id="quiz-start-time" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="quiz-duration">Duration (minutes):</label>
+                                <input type="number" id="quiz-duration" min="1" max="180" required 
+                                       placeholder="Enter quiz duration in minutes">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-save"></i> Save Quiz
+                </button>
+            </form>
+        </div>
+
+        <div id="quiz-list" class="content-list">
+             Quizzes will be listed here -->
+        <!-- </div>
+    </div>  -->
+
+    <!-- Assignment Tab -->
+    <!-- <div class="tab-content" id="assignment-tab">
+        <div class="content-header">
+            <h2><i class="fas fa-tasks"></i> Assignment Management</h2>
+            <p>Create and manage assignments for your students</p>
+        </div>
+
+        <div class="upload-section compact">
+            <div class="section-header">
+                <h3><i class="fas fa-plus-circle"></i> Create New Assignment</h3>
+            </div>
+            <form id="assignment-form" class="upload-form" onsubmit="event.preventDefault(); window.assignmentManager.handleSubmit(event);">
+                <div class="form-grid-compact">
+                    <div class="select-group">
+                        <div class="form-group">
+                            <label for="assignment-class">Class:</label>
+                            <select id="assignment-class" required>
+                                <option value="">Select Class</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="assignment-subject">Subject:</label>
+                            <select id="assignment-subject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Social Studies">Social Studies</option>
+                                <option value="Computer">Computer</option>
+                                <option value="Geography">Geography</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment-title">Title:</label>
+                        <input type="text" id="assignment-title" required placeholder="Enter assignment title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment-description">Description:</label>
+                        <textarea id="assignment-description" rows="3" required placeholder="Enter assignment description"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment-content">Assignment Content:</label>
+                        <textarea id="assignment-content" rows="5" required placeholder="Enter assignment details"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="due-date">Due Date:</label>
+                        <input type="datetime-local" id="due-date" required>
+                    </div>
+                </div>
+
+                <button type="button" class="upload-btn" id="save-assignment-btn">
+                    <i class="fas fa-save"></i> Save Assignment
+                </button>
+            </form>
+        </div>
+
+        <div id="assignment-list" class="content-list">
+             Assignments will be listed here -->
+        <!-- </div>
+    </div>
+</div>   -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+<script src="js/teacher_materials.js"></script>
+<script src="js/quiz_manager.js"></script>
+<script src="js/assignment_manager.js"></script>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<!-- Initialize Firebase -->
+<script>
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        // Test database connection
+        database.ref('.info/connected').on('value', function(snap) {
+            if (snap.val() === true) {
+                console.log('Connected to Firebase Database');
+            } else {
+                console.log('Not connected to Firebase Database');
+            }
+        });
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM Content Loaded');
+        // Verify Firebase is initialized
+        if (!firebase.apps.length) {
+            console.error('Firebase not initialized!');
+            return;
+        }
+
+        // Initialize managers
+        try {
+            console.log('Initializing managers');
+            window.assignmentManager = new AssignmentManager();
+            window.quizManager = new QuizManager();
+        } catch (error) {
+            console.error('Error initializing managers:', error);
+        }
+
+        // Check authentication state
+        firebase.auth().onAuthStateChanged(user => {
+            console.log('Auth state changed:', user);
+            if (user) {
+                console.log('User is signed in:', user.uid);
+                // Add tab change listener
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const tabId = e.target.getAttribute('data-tab');
+                        console.log(`Switching to ${tabId} tab`);
+                        if (tabId === 'assignment') {
+                            window.assignmentManager.setupEventListeners();
+                        }
+                    });
+                });
+            } else {
+                console.log('No user signed in');
+            }
+        });
+    });
+</script> 

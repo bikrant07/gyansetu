@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Archimedes' Principle Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .controls {
+            width: 300px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .simulation {
+            flex-grow: 1;
+            height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(
+                180deg, 
+                rgba(0, 150, 255, 0.2) 0%,
+                rgba(0, 150, 255, 0.3) 100%
+            );
+            transition: height 0.5s;
+            &::before, &::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 88.7'%3E%3Cpath d='M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z' fill='%23003AF2' fill-opacity='0.1'/%3E%3C/svg%3E");
+                animation: wave 10s linear infinite;
+                background-size: 100% 100%;
+            }
+            &::before {
+                height: 15px;
+                top: -15px;
+                opacity: 0.5;
+            }
+            &::after {
+                height: 15px;
+                top: -10px;
+                animation-delay: -5s;
+                opacity: 0.3;
+            }
+        }
+
+        .object {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #ff6b6b, #ff4444);
+            border: 2px solid #cc0000;
+            border-radius: 8px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            &.floating {
+                animation: float 3s ease-in-out infinite;
+            }
+            &.sinking {
+                animation: sink 2s ease-in-out infinite;
+            }
+        }
+
+        .calculations {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes sink {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(5px) rotate(2deg); }
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            animation: ripple 2s linear infinite;
+        }
+
+        @keyframes ripple {
+            0% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <h1>Archimedes' Principle Simulation</h1>
+    
+    <div class="container">
+        <div class="controls">
+            <h2>Controls</h2>
+            <label>Mass (kg):
+                <input type="range" id="mass" min="1" max="10" step="0.1" value="2">
+                <span id="massValue">2</span>
+            </label>
+            
+            <label>Volume (m³):
+                <input type="range" id="volume" min="0.001" max="0.005" step="0.0001" value="0.002">
+                <span id="volumeValue">0.002</span>
+            </label>
+            
+            <label>Fluid Density (kg/m³):
+                <input type="range" id="fluidDensity" min="800" max="1200" step="10" value="1000">
+                <span id="fluidDensityValue">1000</span>
+            </label>
+        </div>
+
+        <div class="simulation">
+            <div class="water"></div>
+            <div class="object"></div>
+        </div>
+    </div>
+
+    <div class="calculations">
+        <h2>Calculations</h2>
+        <p>Object Density: <span id="objectDensity">1000</span> kg/m³</p>
+        <p>Buoyant Force: <span id="buoyantForce">19.6</span> N</p>
+        <p>Weight Force: <span id="weightForce">19.6</span> N</p>
+        <p>Net Force: <span id="netForce">0</span> N</p>
+        <p>Displaced Water: <span id="displacedWater">0</span> m³</p>
+        <p>Status: <span id="status">Neutral Buoyancy</span></p>
+    </div>
+
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+
+    <script>
+        const gravity = 9.81;
+        const object = document.querySelector('.object');
+        
+        // Set initial neutral state values
+        document.getElementById('mass').value = "2";
+        document.getElementById('volume').value = "0.002";
+        document.getElementById('fluidDensity').value = "1000";
+
+        function updateSimulation() {
+            const mass = parseFloat(document.getElementById('mass').value);
+            const volume = parseFloat(document.getElementById('volume').value);
+            const fluidDensity = parseFloat(document.getElementById('fluidDensity').value);
+
+            // Update display values
+            document.getElementById('massValue').textContent = mass.toFixed(3);
+            document.getElementById('volumeValue').textContent = volume.toFixed(4);
+            document.getElementById('fluidDensityValue').textContent = fluidDensity;
+
+            // Calculate physics
+            const objectDensity = mass / volume;
+            let displacedVolume;
+            
+            // Calculate displaced water volume
+            if (objectDensity > fluidDensity) {
+                // When sinking - fully submerged
+                displacedVolume = volume;
+            } else if (objectDensity < fluidDensity) {
+                // When floating - partially submerged based on density ratio
+                const submersionRatio = objectDensity / fluidDensity;
+                displacedVolume = (mass / fluidDensity); // Weight/fluid density gives displaced volume
+            } else {
+                // Neutral buoyancy
+                displacedVolume = volume;
+            }
+
+            const buoyantForce = fluidDensity * displacedVolume * gravity;
+            const weightForce = mass * gravity;
+            const netForce = buoyantForce - weightForce;
+
+            // Update calculations display
+            document.getElementById('objectDensity').textContent = objectDensity.toFixed(1);
+            document.getElementById('buoyantForce').textContent = buoyantForce.toFixed(1);
+            document.getElementById('weightForce').textContent = weightForce.toFixed(1);
+            document.getElementById('netForce').textContent = netForce.toFixed(1);
+            document.getElementById('displacedWater').textContent = displacedVolume.toFixed(4);
+
+            // Update object size based on volume
+            const size = Math.pow(volume * 1000000, 1/3); // Convert to mm³ for visible size
+            object.style.width = size * 10 + 'px';
+            object.style.height = size * 10 + 'px';
+
+            // Update object position based on buoyancy
+            const waterHeight = document.querySelector('.water').offsetHeight;
+            const objectHeight = object.offsetHeight;
+            const simulationHeight = document.querySelector('.simulation').offsetHeight;
+            let position;
+
+            if (Math.abs(objectDensity - fluidDensity) < 0.1) {
+                // Neutral buoyancy - fully submerged but floating in middle
+                position = waterHeight - objectHeight;
+                document.getElementById('status').textContent = "Neutral Buoyancy";
+            } else if (objectDensity < fluidDensity) {
+                // Object floats - position based on density difference
+                const heightAboveWater = objectHeight * (1 - (objectDensity / fluidDensity));
+                position = waterHeight - objectHeight + heightAboveWater;
+                document.getElementById('status').textContent = "Floating";
+            } else {
+                // Object sinks - sinks deeper as density difference increases
+                const densityDifference = (objectDensity - fluidDensity) / fluidDensity;
+                const maxSinkDepth = simulationHeight - waterHeight;
+                const sinkDepth = maxSinkDepth * Math.min(densityDifference, 1);
+                position = Math.max(0, waterHeight - objectHeight - sinkDepth);
+                document.getElementById('status').textContent = "Sinking";
+            }
+
+            // Ensure object stays within container bounds
+            position = Math.max(0, Math.min(position, simulationHeight - objectHeight));
+            
+            object.style.bottom = position + 'px';
+            object.style.left = (document.querySelector('.simulation').offsetWidth - object.offsetWidth) / 2 + 'px';
+            
+            // Update object classes based on status
+            object.classList.remove('floating', 'sinking');
+            if (objectDensity < fluidDensity) {
+                object.classList.add('floating');
+            } else if (objectDensity > fluidDensity) {
+                object.classList.add('sinking');
+            }
+
+            // Add ripple effect when status changes
+            const previousStatus = object.dataset.status;
+            const currentStatus = document.getElementById('status').textContent;
+            if (previousStatus !== currentStatus) {
+                object.dataset.status = currentStatus;
+                createRippleEffect(object);
+            }
+        }
+
+        function createRippleEffect(object) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = object.style.left;
+            ripple.style.bottom = object.style.bottom;
+            ripple.style.width = object.offsetWidth + 'px';
+            ripple.style.height = object.offsetHeight + 'px';
+            document.querySelector('.simulation').appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => ripple.remove(), 2000);
+        }
+
+        // Add event listeners
+        document.getElementById('mass').addEventListener('input', updateSimulation);
+        document.getElementById('volume').addEventListener('input', updateSimulation);
+        document.getElementById('fluidDensity').addEventListener('input', updateSimulation);
+
+        // Ensure initial update happens after DOM is fully loaded
+        window.addEventListener('load', updateSimulation);
+    </script>
+</body>
+</html>

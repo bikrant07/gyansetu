@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Structure - 3D Interactive</title>
+    <!-- Babylon.js core and GUI -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: calc(100% - 320px);
+            height: 100vh;
+            touch-action: none;
+        }
+        .controls-panel {
+            width: 320px;
+            padding: 24px;
+            background: white;
+            box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .info-panel {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .organelle-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .organelle-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+        .organelle-item.active {
+            background: #bbdefb;
+            border-left: 4px solid #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <canvas id="renderCanvas"></canvas>
+    <div class="controls-panel">
+        <h2>Cell Structure Explorer</h2>
+        
+        <div class="info-panel">
+            <h3 id="selected-organelle">Select an organelle</h3>
+            <p id="organelle-description">Click on any cell part to learn more about it.</p>
+            <p id="organelle-function"></p>
+        </div>
+
+        <div id="organelle-list"></div>
+    </div>
+
+    <script>
+        const organelles = {
+            membrane: {
+                name: 'Cell Membrane',
+                color: new BABYLON.Color3(0.7, 0.9, 1.0),
+                description: 'Selectively permeable barrier that surrounds the cell',
+                function: 'Controls what enters and exits the cell'
+            },
+            nucleus: {
+                name: 'Nucleus',
+                color: new BABYLON.Color3(0.25, 0.41, 0.88),
+                description: 'Control center of the cell containing genetic material',
+                function: 'Contains DNA and controls cellular activities'
+            },
+            mitochondria: {
+                name: 'Mitochondria',
+                color: new BABYLON.Color3(1, 0.27, 0),
+                description: 'Powerhouse of the cell',
+                function: 'Produces energy (ATP) through cellular respiration'
+            },
+            golgi: {
+                name: 'Golgi Apparatus',
+                color: new BABYLON.Color3(0.87, 0.63, 0.87),
+                description: 'Stack of flattened sacs',
+                function: 'Modifies, packages, and distributes proteins'
+            },
+            er: {
+                name: 'Endoplasmic Reticulum',
+                color: new BABYLON.Color3(0.6, 1.0, 0.6),
+                description: 'Network of membranous tubules',
+                function: 'Protein synthesis and transport'
+            },
+            lysosome: {
+                name: 'Lysosome',
+                color: new BABYLON.Color3(1.0, 0.4, 0.4),
+                description: 'Digestive organelle',
+                function: 'Breaks down cellular waste and foreign materials'
+            },
+            ribosome: {
+                name: 'Ribosomes',
+                color: new BABYLON.Color3(0.9, 0.9, 0.2),
+                description: 'Protein factories',
+                function: 'Synthesize proteins'
+            },
+            vacuole: {
+                name: 'Vacuole',
+                color: new BABYLON.Color3(0.5, 0.8, 1.0),
+                description: 'Storage compartment',
+                function: 'Stores water, nutrients, and waste products'
+            },
+            chloroplast: {
+                name: 'Chloroplast',
+                color: new BABYLON.Color3(0.2, 0.8, 0.2),
+                description: 'Photosynthetic organelle',
+                function: 'Converts light energy into chemical energy'
+            }
+        };
+
+        // First, declare scene as a global variable
+        let scene;
+
+        // Create the scene function
+        function createScene() {
+            // Initialize the scene
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.95, 0.95, 0.95);
+
+            // Create camera
+            const camera = new BABYLON.ArcRotateCamera("camera", 
+                0, Math.PI / 3, 20, 
+                BABYLON.Vector3.Zero(), 
+                scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 30;
+            camera.wheelDeltaPercentage = 0.01;
+
+            // Add lights
+            const hemisphericLight = new BABYLON.HemisphericLight("hemispheric", 
+                new BABYLON.Vector3(0, 1, 0), scene);
+            hemisphericLight.intensity = 0.7;
+
+            const pointLight = new BABYLON.PointLight("pointLight", 
+                new BABYLON.Vector3(5, 5, -5), scene);
+            pointLight.intensity = 0.5;
+
+            // Function to create permanent labels
+            function createPermanentLabel(mesh, text) {
+                // Create a container for the label system
+                const labelContainer = new BABYLON.TransformNode("label-" + text, scene);
+                labelContainer.parent = mesh;
+
+                // Create the line pointing to the organelle
+                const line = BABYLON.MeshBuilder.CreateLines("line", {
+                    points: [
+                        new BABYLON.Vector3(0, 0, 0),
+                        new BABYLON.Vector3(2, 2, 0)
+                    ]
+                }, scene);
+                line.color = new BABYLON.Color3(0, 0, 0);
+                line.parent = labelContainer;
+
+                // Create the text plane
+                const plane = BABYLON.MeshBuilder.CreatePlane("label-plane-" + text, {
+                    width: 2,
+                    height: 0.5
+                }, scene);
+                plane.position = new BABYLON.Vector3(2.5, 2, 0);
+                plane.parent = labelContainer;
+
+                // Create dynamic texture for text
+                const texture = new BABYLON.DynamicTexture("label-texture-" + text, {
+                    width: 512,
+                    height: 128
+                }, scene);
+                
+                const material = new BABYLON.StandardMaterial("label-material-" + text, scene);
+                material.diffuseTexture = texture;
+                material.specularColor = BABYLON.Color3.Black();
+                material.emissiveColor = BABYLON.Color3.White();
+                material.backFaceCulling = false;
+                plane.material = material;
+
+                // Draw text with background
+                const ctx = texture.getContext();
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 512, 128);
+                
+                const fontSize = 40;
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'black';
+                ctx.fillText(text, 10, 64);
+                
+                texture.update();
+
+                // Make label always face camera
+                plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+
+                return labelContainer;
+            }
+
+            // Create cell membrane
+            const membrane = BABYLON.MeshBuilder.CreateSphere("membrane", 
+                {diameter: 15, segments: 32}, scene);
+            const membraneMat = new BABYLON.StandardMaterial("membraneMat", scene);
+            membraneMat.diffuseColor = new BABYLON.Color3(0.7, 0.9, 1.0);
+            membraneMat.alpha = 0.3;
+            membraneMat.backFaceCulling = false;
+            membrane.material = membraneMat;
+            createPermanentLabel(membrane, "Cell Membrane");
+
+            // Create nucleus
+            const nucleus = BABYLON.MeshBuilder.CreateSphere("nucleus", 
+                {diameter: 4, segments: 32}, scene);
+            const nucleusMat = new BABYLON.StandardMaterial("nucleusMat", scene);
+            nucleusMat.diffuseColor = new BABYLON.Color3(0.25, 0.41, 0.88);
+            nucleus.material = nucleusMat;
+            const nucleusLabel = createPermanentLabel(nucleus, "Nucleus");
+            nucleusLabel.position = new BABYLON.Vector3(1, 1, 1);
+
+            // Create mitochondria
+            const mitochondriaPositions = [
+                new BABYLON.Vector3(3, 2, 1),
+                new BABYLON.Vector3(-3, -2, 1),
+                new BABYLON.Vector3(2, -3, -1)
+            ];
+
+            mitochondriaPositions.forEach((pos, index) => {
+                const mitochondria = BABYLON.MeshBuilder.CreateCapsule(
+                    "mitochondria" + index,
+                    {radius: 0.5, height: 2, tessellation: 24},
+                    scene
+                );
+                mitochondria.position = pos;
+                const mitochondriaMat = new BABYLON.StandardMaterial(
+                    "mitochondriaMat" + index, 
+                    scene
+                );
+                mitochondriaMat.diffuseColor = new BABYLON.Color3(1, 0.27, 0);
+                mitochondria.material = mitochondriaMat;
+                
+                const label = createPermanentLabel(mitochondria, "Mitochondria");
+                label.position = new BABYLON.Vector3(0.5, 0.5, 0.5);
+            });
+
+            // Create Golgi apparatus
+            const golgi = new BABYLON.TransformNode("golgi", scene);
+            for(let i = 0; i < 5; i++) {
+                const layer = BABYLON.MeshBuilder.CreateDisc(
+                    "golgiLayer" + i,
+                    {radius: 1.5 - (i * 0.1), tessellation: 32},
+                    scene
+                );
+                layer.parent = golgi;
+                layer.position.y = i * 0.2;
+                layer.rotation.x = Math.PI / 8;
+                
+                const golgiMat = new BABYLON.StandardMaterial(
+                    "golgiMat" + i, 
+                    scene
+                );
+                golgiMat.diffuseColor = new BABYLON.Color3(0.87, 0.63, 0.87);
+                layer.material = golgiMat;
+            }
+            golgi.position = new BABYLON.Vector3(4, 0, 0);
+            const golgiLabel = createPermanentLabel(golgi, "Golgi Apparatus");
+            golgiLabel.position = new BABYLON.Vector3(0, 1, 0);
+
+            // Create endoplasmic reticulum
+            const erPoints = [];
+            for(let i = 0; i < 20; i++) {
+                erPoints.push(new BABYLON.Vector3(
+                    Math.sin(i * 0.5) * 3,
+                    Math.cos(i * 0.3) * 3,
+                    Math.sin(i * 0.4) * 3
+                ));
+            }
+            const er = BABYLON.MeshBuilder.CreateTube("er", {
+                path: erPoints,
+                radius: 0.2,
+                tessellation: 12
+            }, scene);
+            const erMat = new BABYLON.StandardMaterial("erMat", scene);
+            erMat.diffuseColor = new BABYLON.Color3(0.6, 1.0, 0.6);
+            er.material = erMat;
+            const erLabel = createPermanentLabel(er, "Endoplasmic Reticulum");
+            erLabel.position = new BABYLON.Vector3(-1, 1, 0);
+
+            // Add click handling
+            scene.onPointerDown = function(evt, pickResult) {
+                if(pickResult.hit) {
+                    const mesh = pickResult.pickedMesh;
+                    // Update info panel based on clicked mesh
+                    Object.keys(organelles).forEach(key => {
+                        if(mesh.name.includes(key)) {
+                            updateInfo(key);
+                        }
+                    });
+                }
+            };
+
+            return scene;
+        }
+
+        // Initialize engine and scene
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        scene = createScene();
+
+        // Render loop
+        engine.runRenderLoop(function() {
+            updateLabelPositions();
+            scene.render();
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", function() {
+            engine.resize();
+        });
+
+        // Populate organelle list
+        const organelleList = document.getElementById('organelle-list');
+        Object.entries(organelles).forEach(([key, info]) => {
+            const div = document.createElement('div');
+            div.className = 'organelle-item';
+            div.textContent = info.name;
+            div.onclick = () => updateInfo(key);
+            organelleList.appendChild(div);
+        });
+
+        function updateInfo(key) {
+            const info = organelles[key];
+            document.getElementById('selected-organelle').textContent = info.name;
+            document.getElementById('organelle-description').textContent = info.description;
+            document.getElementById('organelle-function').textContent = info.function;
+
+            document.querySelectorAll('.organelle-item').forEach(item => {
+                item.classList.toggle('active', item.textContent === info.name);
+            });
+        }
+
+        // Add these helper functions for better label positioning
+        function updateLabelPositions() {
+            scene.meshes.forEach(mesh => {
+                if (mesh.name.startsWith("label-")) {
+                    const labelPos = mesh.absolutePosition;
+                    const cameraPos = scene.activeCamera.position;
+                    
+                    // Adjust label position based on camera angle
+                    const angle = Math.atan2(cameraPos.z - labelPos.z, cameraPos.x - labelPos.x);
+                    mesh.rotation.y = angle;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cookies = document.cookie.split(';');
+            let preferredLanguage = 'en'; // Default language
+
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'preferredLanguage') {
+                    preferredLanguage = decodeURIComponent(value);
+                }
+            });
+
+            if (preferredLanguage !== 'en') {
+                changeLanguage(preferredLanguage);
+            }
+        });
+
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        function changeLanguage(lang) {
+            if (!lang) return;
+
+            // Set the language in a cookie
+            setCookie('preferredLanguage', lang, 365);
+
+            // Get Google Translate element
+            const googleTranslateElement = document.querySelector('#google_translate_element');
+            
+            if (googleTranslateElement) {
+                // Get the select element from Google Translate
+                const selectElement = googleTranslateElement.querySelector('select');
+                if (selectElement) {
+                    // Set the value and trigger change event
+                    selectElement.value = lang;
+                    selectElement.dispatchEvent(new Event('change'));
+                } else {
+                    // If select element is not found, use Google Translate API directly
+                    const iframe = document.querySelector('.goog-te-menu-frame');
+                    if (iframe) {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const select = iframeDoc.querySelector('select.goog-te-combo');
+                        if (select) {
+                            select.value = lang;
+                            select.dispatchEvent(new Event('change'));
+                        }
+                    }
+                }
+            }
+
+            // Use Google Translate API directly as fallback
+            if (typeof google !== 'undefined' && google.translate) {
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.value = lang;
+                    select.dispatchEvent(new Event('change'));
+                } else {
+                    google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: lang,
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: true,
+                    }, 'google_translate_element');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

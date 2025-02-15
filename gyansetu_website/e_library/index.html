@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GyanSetu E-Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/styles/navbar.css">
+    <link rel="stylesheet" href="/assets/styles/main.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="library-container">
+        <div class="library-header">
+            <h1><i class="fas fa-book-reader"></i> E-Library</h1>
+            <p>Access educational resources anytime, anywhere</p>
+        </div>
+
+        <!-- Tabs for teacher view -->
+        <div class="tabs teacher-only" style="display: none;">
+            <button class="tab-btn active" data-tab="books">
+                <i class="fas fa-book"></i> Available Books
+            </button>
+            <button class="tab-btn" data-tab="manuals">
+                <i class="fas fa-chalkboard-teacher"></i> Teaching Manuals
+            </button>
+        </div>
+
+        <!-- Books Section -->
+        <div class="tab-content active" id="books-tab">
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="class-filter">Class:</label>
+                    <select id="class-filter">
+                        <option value="">All Classes</option>
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="subject-filter">Subject:</label>
+                    <select id="subject-filter">
+                        <option value="">All Subjects</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="english">English</option>
+                        <option value="social_studies">Social Studies</option>
+                        <option value="computer">Computer Science</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="biology">Biology</option>
+                    </select>
+                </div>
+
+                <div class="filter-group search">
+                    <label for="search-input">Search:</label>
+                    <input type="text" id="search-input" placeholder="Search books...">
+                </div>
+            </div>
+
+            <div id="books-grid" class="books-grid">
+                <!-- Books will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Teaching Manuals Section (Teacher Only) -->
+        <div class="tab-content" id="manuals-tab">
+            <div class="filters-section">
+                <div class="filter-group search">
+                    <label for="manual-search">Search:</label>
+                    <input type="text" id="manual-search" placeholder="Search teaching manuals...">
+                </div>
+            </div>
+
+            <div id="manuals-grid" class="books-grid">
+                <!-- Teaching manuals will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+        authDomain: "gyansetu-6e83b.firebaseapp.com",
+        databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+        projectId: "gyansetu-6e83b",
+        storageBucket: "gyansetu-6e83b.firebasestorage.app",
+        messagingSenderId: "796398190152",
+        appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+        measurementId: "G-QPSS3KKZ91",
+      };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script src="../components/navbar.js"></script>
+    <script src="js/library.js"></script>
+</body>
+</html>

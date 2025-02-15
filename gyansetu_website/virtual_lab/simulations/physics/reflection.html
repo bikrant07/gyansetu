@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laws of Reflection - Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+        #simulation-container {
+            flex: 1;
+            position: relative;
+        }
+        #simulation-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .controls-panel {
+            width: 320px;
+            padding: 24px;
+            background: white;
+            box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+        .control-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .measurements-panel {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .measurement-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 14px;
+            align-items: center;
+        }
+        .measurement-item label {
+            font-weight: 500;
+            color: #1a237e;
+        }
+        .measurement-item span {
+            font-family: monospace;
+            font-size: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #1a237e;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            accent-color: #1a237e;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #283593;
+            transform: translateY(-2px);
+        }
+        #law-verification {
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.5);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <div id="simulation-container">
+        <canvas id="simulation-canvas"></canvas>
+    </div>
+    <div class="controls-panel">
+        <h2>Laws of Reflection</h2>
+        
+        <div class="control-group">
+            <label>Incident Angle: <span id="angle-value">45°</span></label>
+            <input type="range" id="incident-angle" min="0" max="90" value="45" step="1">
+        </div>
+
+        <div class="control-group">
+            <label>Ray Intensity: <span id="intensity-value">100%</span></label>
+            <input type="range" id="ray-intensity" min="0" max="100" value="100">
+        </div>
+
+        <div class="measurements-panel">
+            <h3>Measurements</h3>
+            <div class="measurement-item">
+                <label>Incident Angle (θi):</label>
+                <span id="measured-incident">45.0°</span>
+            </div>
+            <div class="measurement-item">
+                <label>Reflection Angle (θr):</label>
+                <span id="measured-reflection">45.0°</span>
+            </div>
+            <div class="measurement-item">
+                <label>Law of Reflection:</label>
+                <span>θi = θr</span>
+            </div>
+            <div class="measurement-item">
+                <span id="law-verification" style="width: 100%; text-align: center; font-weight: bold;">
+                    ✓ Law Verified
+                </span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="resetSimulation()">Reset</button>
+            <button onclick="toggleGuides()">Toggle Guides</button>
+        </div>
+    </div>
+
+    <script>
+        class DirectionalArrow {
+            constructor(scene, startPoint, endPoint, color) {
+                const headLength = 0.2;
+                const headWidth = 0.1;
+                const bodyWidth = 0.02;
+
+                const direction = new THREE.Vector3().subVectors(endPoint, startPoint);
+                const length = direction.length() - headLength;
+
+                const bodyGeometry = new THREE.CylinderGeometry(bodyWidth, bodyWidth, length, 8);
+                const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                    color: color,
+                    metalness: 0.3,
+                    roughness: 0.4
+                });
+                this.body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+
+                const headGeometry = new THREE.ConeGeometry(headWidth, headLength, 8);
+                const headMaterial = new THREE.MeshStandardMaterial({ 
+                    color: color,
+                    metalness: 0.3,
+                    roughness: 0.4
+                });
+                this.head = new THREE.Mesh(headGeometry, headMaterial);
+
+                this.arrow = new THREE.Object3D();
+                this.arrow.add(this.body);
+                this.arrow.add(this.head);
+
+                this.body.position.y = length / 2;
+                this.head.position.y = length + (headLength / 2);
+
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+                this.arrow.quaternion.copy(quaternion);
+                this.arrow.position.copy(startPoint);
+
+                scene.add(this.arrow);
+            }
+
+            remove(scene) {
+                scene.remove(this.arrow);
+            }
+        }
+
+        class TextSprite {
+            constructor(scene, text, position, color) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 100;
+                canvas.height = 50;
+                const context = canvas.getContext('2d');
+                context.font = '16px Arial';
+                context.fillStyle = color;
+                context.fillText(text, 50, 25);
+
+                const texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+
+                const material = new THREE.MeshBasicMaterial({
+                    map: texture,
+                    transparent: true
+                });
+
+                const geometry = new THREE.PlaneGeometry(1, 0.2);
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.copy(position);
+                mesh.quaternion.copy(new THREE.Quaternion());
+                scene.add(mesh);
+            }
+        }
+
+        class Sun {
+            constructor(scene, radius = 0.3) {
+                // Sun sphere
+                const geometry = new THREE.SphereGeometry(radius, 32, 32);
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0xffdd00,
+                    emissive: 0xffdd00,
+                    emissiveIntensity: 1,
+                    metalness: 0,
+                    roughness: 0.5
+                });
+                this.mesh = new THREE.Mesh(geometry, material);
+
+                // Glow effect
+                const glowGeometry = new THREE.SphereGeometry(radius * 1.2, 32, 32);
+                const glowMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        glowColor: { value: new THREE.Color(0xffdd00) }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform vec3 glowColor;
+                        varying vec3 vNormal;
+                        void main() {
+                            float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 4.0);
+                            gl_FragColor = vec4(glowColor, intensity);
+                        }
+                    `,
+                    transparent: true,
+                    side: THREE.BackSide
+                });
+                this.glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                
+                // Add rays coming out of sun
+                const rayCount = 8;
+                const rayLength = radius * 1.5;
+                const rayGeometry = new THREE.CylinderGeometry(0.02, 0.02, rayLength, 8);
+                const rayMaterial = new THREE.MeshStandardMaterial({
+                    color: 0xffdd00,
+                    emissive: 0xffdd00,
+                    emissiveIntensity: 0.5
+                });
+
+                this.rays = new THREE.Group();
+                for(let i = 0; i < rayCount; i++) {
+                    const ray = new THREE.Mesh(rayGeometry, rayMaterial);
+                    ray.rotation.z = (i * Math.PI * 2) / rayCount;
+                    ray.position.x = Math.cos(ray.rotation.z) * rayLength/2;
+                    ray.position.y = Math.sin(ray.rotation.z) * rayLength/2;
+                    this.rays.add(ray);
+                }
+
+                // Create container for all sun parts
+                this.container = new THREE.Group();
+                this.container.add(this.mesh);
+                this.container.add(this.glow);
+                this.container.add(this.rays);
+                
+                scene.add(this.container);
+            }
+
+            updatePosition(angle) {
+                const radius = 3; // Distance from center
+                const angleRad = (angle * Math.PI) / 180;
+                this.container.position.x = -radius * Math.sin(angleRad);
+                this.container.position.y = radius * Math.cos(angleRad);
+                
+                // Rotate rays
+                this.rays.rotation.z += 0.01;
+            }
+        }
+
+        let scene, camera, renderer, controls;
+        let mirror, incidentRay, reflectedRay, normalLine;
+        let incidentArrow, reflectedArrow;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        let isDragging = false;
+        let guidesVisible = true;
+
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f0f0);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, (window.innerWidth - 320) / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 5);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('simulation-canvas'),
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth - 320, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0xffffff, 0.5);
+            pointLight.position.set(-5, 5, -5);
+            scene.add(pointLight);
+
+            // Mirror
+            const mirrorGeometry = new THREE.PlaneGeometry(4, 0.1);
+            const mirrorMaterial = new THREE.MeshStandardMaterial({
+                color: 0x808080,
+                metalness: 0.7,
+                roughness: 0.3,
+                side: THREE.DoubleSide
+            });
+            mirror = new THREE.Mesh(mirrorGeometry, mirrorMaterial);
+            mirror.receiveShadow = true;
+            scene.add(mirror);
+
+            // Grid
+            const gridHelper = new THREE.GridHelper(10, 20, 0x666666, 0x444444);
+            gridHelper.rotation.x = Math.PI / 2;
+            scene.add(gridHelper);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Add sun
+            window.sun = new Sun(scene);
+            
+            // Initial updates
+            updateRaysWithArrows(45);
+        }
+
+        function addLabelsAndGuides() {
+            // Add labels and guides
+            scene.traverse((object) => {
+                if (object instanceof THREE.Sprite || object instanceof THREE.GridHelper) {
+                    object.visible = guidesVisible;
+                }
+            });
+        }
+
+        function updateRaysWithArrows(angle) {
+            // Remove existing rays and arrows
+            if (incidentRay) scene.remove(incidentRay);
+            if (reflectedRay) scene.remove(reflectedRay);
+            if (incidentArrow) incidentArrow.remove(scene);
+            if (reflectedArrow) reflectedArrow.remove(scene);
+
+            const angleRad = (angle * Math.PI) / 180;
+            const rayLength = 2;
+            const intensity = document.getElementById('ray-intensity')?.value / 100 || 1;
+
+            // Calculate points
+            const incidentStart = new THREE.Vector3(
+                -rayLength * Math.sin(angleRad),
+                rayLength * Math.cos(angleRad),
+                0
+            );
+            const incidentEnd = new THREE.Vector3(0, 0, 0);
+            const reflectedStart = new THREE.Vector3(0, 0, 0);
+            const reflectedEnd = new THREE.Vector3(
+                rayLength * Math.sin(angleRad),
+                rayLength * Math.cos(angleRad),
+                0
+            );
+
+            // Create rays
+            const createRay = (start, end, color) => {
+                const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+                const material = new THREE.LineBasicMaterial({
+                    color: color,
+                    opacity: intensity,
+                    transparent: true,
+                    linewidth: 2
+                });
+                return new THREE.Line(geometry, material);
+            };
+
+            incidentRay = createRay(incidentStart, incidentEnd, 0xff0000);
+            reflectedRay = createRay(reflectedStart, reflectedEnd, 0x00ff00);
+            
+            scene.add(incidentRay);
+            scene.add(reflectedRay);
+
+            // Create arrows
+            const midPointOffset = 0.3;
+            
+            const incidentMidPoint = new THREE.Vector3().lerpVectors(incidentStart, incidentEnd, 0.5 + midPointOffset);
+            incidentArrow = new DirectionalArrow(scene, incidentMidPoint, incidentEnd, 0xff0000);
+
+            const reflectedMidPoint = new THREE.Vector3().lerpVectors(reflectedStart, reflectedEnd, 0.5 - midPointOffset);
+            reflectedArrow = new DirectionalArrow(scene, reflectedMidPoint, reflectedEnd, 0x00ff00);
+
+            // Update sun position
+            if(window.sun) {
+                window.sun.updatePosition(angle);
+            }
+
+            // Update measurements dynamically
+            updateMeasurements(angle);
+        }
+
+        function updateMeasurements(angle) {
+            // Update angle displays
+            document.getElementById('measured-incident').textContent = `${angle.toFixed(1)}°`;
+            document.getElementById('measured-reflection').textContent = `${angle.toFixed(1)}°`;
+            
+            // Update law verification
+            const lawVerification = document.getElementById('law-verification');
+            if(lawVerification) {
+                lawVerification.textContent = angle.toFixed(1) === angle.toFixed(1) ? 
+                    '✓ Law Verified' : '✗ Law Not Verified';
+                lawVerification.style.color = angle.toFixed(1) === angle.toFixed(1) ? 
+                    '#4CAF50' : '#F44336';
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if(window.sun) {
+                window.sun.rays.rotation.z += 0.01;
+            }
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = (window.innerWidth - 320) / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth - 320, window.innerHeight);
+        }
+
+        function resetSimulation() {
+            document.getElementById('incident-angle').value = 45;
+            document.getElementById('angle-value').textContent = '45°';
+            if(document.getElementById('ray-intensity')) {
+                document.getElementById('ray-intensity').value = 100;
+                document.getElementById('intensity-value').textContent = '100%';
+            }
+            updateRaysWithArrows(45);
+        }
+
+        function toggleGuides() {
+            guidesVisible = !guidesVisible;
+            // Toggle visibility of labels and guides
+            scene.traverse((object) => {
+                if (object instanceof THREE.Sprite || object instanceof THREE.GridHelper) {
+                    object.visible = guidesVisible;
+                }
+            });
+        }
+
+        // Initialize
+        init();
+        animate();
+
+        // Event listeners
+        window.addEventListener('resize', onWindowResize);
+
+        document.getElementById('incident-angle').addEventListener('input', (e) => {
+            const angle = parseFloat(e.target.value);
+            document.getElementById('angle-value').textContent = `${angle.toFixed(1)}°`;
+            updateRaysWithArrows(angle);
+        });
+
+        document.getElementById('ray-intensity').addEventListener('input', (e) => {
+            const intensity = parseInt(e.target.value);
+            document.getElementById('intensity-value').textContent = `${intensity}%`;
+            updateRaysWithArrows(parseFloat(document.getElementById('incident-angle').value));
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cookies = document.cookie.split(';');
+            let preferredLanguage = 'en'; // Default language
+
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'preferredLanguage') {
+                    preferredLanguage = decodeURIComponent(value);
+                }
+            });
+
+            if (preferredLanguage !== 'en') {
+                changeLanguage(preferredLanguage);
+            }
+        });
+
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        function changeLanguage(lang) {
+            if (!lang) return;
+
+            // Set the language in a cookie
+            setCookie('preferredLanguage', lang, 365);
+
+            // Get Google Translate element
+            const googleTranslateElement = document.querySelector('#google_translate_element');
+            
+            if (googleTranslateElement) {
+                // Get the select element from Google Translate
+                const selectElement = googleTranslateElement.querySelector('select');
+                if (selectElement) {
+                    // Set the value and trigger change event
+                    selectElement.value = lang;
+                    selectElement.dispatchEvent(new Event('change'));
+                } else {
+                    // If select element is not found, use Google Translate API directly
+                    const iframe = document.querySelector('.goog-te-menu-frame');
+                    if (iframe) {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const select = iframeDoc.querySelector('select.goog-te-combo');
+                        if (select) {
+                            select.value = lang;
+                            select.dispatchEvent(new Event('change'));
+                        }
+                    }
+                }
+            }
+
+            // Use Google Translate API directly as fallback
+            if (typeof google !== 'undefined' && google.translate) {
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.value = lang;
+                    select.dispatchEvent(new Event('change'));
+                } else {
+                    google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: lang,
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: true,
+                    }, 'google_translate_element');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

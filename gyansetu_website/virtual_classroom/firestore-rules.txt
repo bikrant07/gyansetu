@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isTeacher() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    function hasTeacherEmail() {
+      return request.auth.token.email.matches('.*@gyansetu[.]com');
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() 
+                   && request.auth.uid == userId
+                   && request.resource.data.keys().hasAll(['name', 'email', 'role', 'createdAt']);
+      allow update: if isOwner(userId) || isTeacher();
+    }
+    
+    // Admins collection rules
+    match /admins/{userId} {
+      allow read: if request.auth != null;
+      allow write: if false;  // Only allow writes through admin SDK
+    }
+
+    // Admin requests collection rules
+    match /admin_requests/{requestId} {
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'userEmail', 'request', 'timestamp', 'status'])
+        && request.resource.data.status == 'pending';
+
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isTeacher());
+    }
+
+    // Materials collection rules
+    match /materials/{materialId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // Quizzes collection rules
+    match /quizzes/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // Quiz results collection rules
+    match /quiz_results/{resultId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn() && 
+        (resource.data.userId == request.auth.uid || isTeacher());
+      allow update, delete: if isTeacher();
+    }
+
+    // Study materials collection rules
+    match /study_materials/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

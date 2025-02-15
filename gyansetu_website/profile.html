@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/styles/profile.css">
+    <link rel="stylesheet" href="assets/styles/navbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        /* Add these styles for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
+        }
+
+        .cropper-container {
+            max-height: 70vh;
+            margin-bottom: 20px;
+        }
+
+        #cropPreview {
+            max-width: 100%;
+            max-height: 70vh;
+        }
+    </style>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <!-- Navbar will be injected here -->
+    <div id="navbar-container"></div>
+
+    <!-- Add profile-page class to the main container -->
+    <div class="profile-page">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-picture-container">
+                    <label for="imageUpload">
+                        <img id="profileImage" src="assets/images/default-avatar.png" alt="Profile Picture" class="profile-picture">
+                        <div class="profile-picture-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/*">
+                </div>
+                <h1 class="profile-name" id="profileName">Loading...</h1>
+                <p class="profile-email" id="profileEmail">Loading...</p>
+                <span class="profile-role" id="profileRole">Loading...</span>
+            </div>
+
+            <div class="bio-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-edit"></i>
+                    Bio
+                    <button class="edit-btn" id="editBioBtn">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </h2>
+                <p class="bio-text" id="profileBio">Loading...</p>
+                <div class="bio-edit-container hidden" id="bioEditContainer">
+                    <textarea id="bioInput" class="bio-input" maxlength="200" rows="4"></textarea>
+                    <div class="edit-actions">
+                        <button class="save-btn" id="saveBioBtn">Save</button>
+                        <button class="cancel-btn" id="cancelBioBtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="learning-progress">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Learning Progress
+                </h2>
+                <div class="progress-grid" id="progressGrid">
+                    <!-- Progress cards will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="cropperModal">
+        <div class="modal-content">
+            <div class="cropper-container">
+                <img id="cropPreview" src="" alt="Preview">
+            </div>
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancelCropBtn">Cancel</button>
+                <button class="save-btn" id="cropImageBtn">Crop & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+            authDomain: "gyansetu-6e83b.firebaseapp.com",
+            databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+            projectId: "gyansetu-6e83b",
+            storageBucket: "gyansetu-6e83b.firebasestorage.app",
+            messagingSenderId: "796398190152",
+            appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+            measurementId: "G-QPSS3KKZ91"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Initialize Firestore
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Load user data
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    // Check if profile data is already in localStorage
+                    const cachedProfile = JSON.parse(localStorage.getItem('profileData'));
+                    if (cachedProfile && cachedProfile.uid === user.uid) {
+                        // Use cached data
+                        updateProfileUI(cachedProfile);
+                    } else {
+                        // Fetch from Firestore
+                        let doc = await db.collection('users').doc(user.uid).get();
+                        if (!doc.exists) {
+                            doc = await db.collection('admins').doc(user.uid).get();
+                        }
+
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            userData.uid = user.uid; // Add UID to the data
+
+                            // Update UI
+                            updateProfileUI(userData);
+
+                            // Cache the data
+                            localStorage.setItem('profileData', JSON.stringify(userData));
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading profile:", error);
+                }
+            } else {
+                window.location.href = 'login_page.html';
+            }
+        });
+
+        // Function to update the profile UI
+        function updateProfileUI(userData) {
+            document.getElementById('profileName').textContent = userData.profileName || userData.name;
+            document.getElementById('profileEmail').textContent = userData.email;
+            document.getElementById('profileRole').textContent = userData.role.charAt(0).toUpperCase() + userData.role.slice(1);
+            document.getElementById('profileBio').textContent = userData.bio || 'No bio added yet.';
+
+            if (userData.profileImageUrl) {
+                document.getElementById('profileImage').src = userData.profileImageUrl;
+            }
+        }
+
+        // Bio edit functionality
+        const editBioBtn = document.getElementById('editBioBtn');
+        const bioEditContainer = document.getElementById('bioEditContainer');
+        const bioInput = document.getElementById('bioInput');
+        const saveBioBtn = document.getElementById('saveBioBtn');
+        const cancelBioBtn = document.getElementById('cancelBioBtn');
+        const profileBio = document.getElementById('profileBio');
+
+        editBioBtn.addEventListener('click', () => {
+            bioInput.value = profileBio.textContent;
+            bioEditContainer.classList.remove('hidden');
+            profileBio.classList.add('hidden');
+            bioInput.focus();
+        });
+
+        cancelBioBtn.addEventListener('click', () => {
+            bioEditContainer.classList.add('hidden');
+            profileBio.classList.remove('hidden');
+        });
+
+        saveBioBtn.addEventListener('click', async () => {
+            const newBio = bioInput.value.trim();
+            if (!newBio) return;
+
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+
+            try {
+                saveBioBtn.innerHTML = '<div class="loading-spinner"></div>';
+                saveBioBtn.disabled = true;
+
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const collection = userDoc.exists ? 'users' : 'admins';
+
+                await db.collection(collection).doc(user.uid).update({
+                    bio: newBio
+                });
+
+                // Update UI
+                profileBio.textContent = newBio;
+                bioEditContainer.classList.add('hidden');
+                profileBio.classList.remove('hidden');
+
+                // Update localStorage
+                const cachedProfile = JSON.parse(localStorage.getItem('profileData'));
+                if (cachedProfile) {
+                    cachedProfile.bio = newBio;
+                    localStorage.setItem('profileData', JSON.stringify(cachedProfile));
+                }
+            } catch (error) {
+                console.error("Error updating bio:", error);
+                alert("Failed to update bio. Please try again.");
+            } finally {
+                saveBioBtn.innerHTML = 'Save';
+                saveBioBtn.disabled = false;
+            }
+        });
+
+        // Add loading state to image upload
+        let cropper = null;
+
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Create a FileReader to read the image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Get the preview image and modal
+                const preview = document.getElementById('cropPreview');
+                const modal = document.getElementById('cropperModal');
+                
+                // Set the image source and show modal
+                preview.src = e.target.result;
+                modal.classList.add('show');
+
+                // Initialize cropper
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(preview, {
+                    aspectRatio: 1, // 1:1 ratio for profile picture
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Add cancel crop button handler
+        document.getElementById('cancelCropBtn').addEventListener('click', function() {
+            const modal = document.getElementById('cropperModal');
+            modal.classList.remove('show');
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            // Reset file input
+            document.getElementById('imageUpload').value = '';
+        });
+
+        // Add crop and save button handler
+        document.getElementById('cropImageBtn').addEventListener('click', async function() {
+            if (!cropper) return;
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert("You must be logged in to upload a profile picture.");
+                return;
+            }
+
+            try {
+                const cropBtn = document.getElementById('cropImageBtn');
+                const profileImage = document.getElementById('profileImage');
+                cropBtn.disabled = true;
+                cropBtn.innerHTML = '<div class="loading-spinner"></div>';
+                profileImage.style.opacity = '0.5';
+
+                const canvas = cropper.getCroppedCanvas({
+                    width: 400,
+                    height: 400,
+                    imageSmoothingQuality: 'high',
+                });
+
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const isStudent = userDoc.exists;
+                const collection = isStudent ? 'users' : 'admins';
+
+                const storageRef = storage.ref(`profile_pictures/${user.uid}/${user.uid}.jpg`);
+                const metadata = {
+                    contentType: 'image/jpeg',
+                    customMetadata: {
+                        'userRole': isStudent ? 'student' : 'teacher',
+                        'userId': user.uid
+                    }
+                };
+
+                const uploadTask = await storageRef.put(blob, metadata);
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+
+                await db.collection(collection).doc(user.uid).update({
+                    profileImageUrl: downloadURL
+                });
+
+                profileImage.src = downloadURL;
+
+                const modal = document.getElementById('cropperModal');
+                modal.classList.remove('show');
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                document.getElementById('imageUpload').value = '';
+
+                // Update localStorage
+                const cachedProfile = JSON.parse(localStorage.getItem('profileData'));
+                if (cachedProfile) {
+                    cachedProfile.profileImageUrl = downloadURL;
+                    localStorage.setItem('profileData', JSON.stringify(cachedProfile));
+                }
+
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                alert(`Failed to upload image: ${error.message}. Please try again.`);
+            } finally {
+                document.getElementById('cropImageBtn').disabled = false;
+                document.getElementById('cropImageBtn').innerHTML = 'Crop & Save';
+                document.getElementById('profileImage').style.opacity = '1';
+            }
+        });
+    </script>
+
+    <!-- Include navbar component -->
+    <script src="components/navbar.js"></script>
+
+    <!-- Add this right after body tag opens -->
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<div class="materials-container">
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="materials">
+            <i class="fas fa-book"></i>
+            Study Materials
+        </button>
+        <!-- <button class="tab-btn" data-tab="quiz">
+            <i class="fas fa-question-circle"></i>
+            Quiz
+        </button> -->
+    </div>
+
+    <!-- Materials Tab -->
+    <div class="tab-content active" id="materials-tab">
+        <!-- <div class="dashboard-grid"> -->
+            <!-- Quick Stats -->
+            <!-- <div class="dashboard-card stats">
+                <h3>Quick Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="completedQuizzes">0</span>
+                        <span class="stat-label">Completed Quizzes</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="averageScore">0%</span>
+                        <span class="stat-label">Average Score</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="pendingQuizzes">0</span>
+                        <span class="stat-label">Pending Quizzes</span>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Performance Chart -->
+            <!-- <div class="dashboard-card performance">
+                <h3>Performance Overview</h3>
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div> -->
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="class-filter">Class:</label>
+                    <select 
+                        id="class-filter" 
+                        title="Select Class"
+                        aria-label="Select Class"
+                    >
+                        <option value="">All Classes</option>
+                        <option value="Class 6">Class 6</option>
+                        <option value="Class 7">Class 7</option>
+                        <option value="Class 8">Class 8</option>
+                        <option value="Class 9">Class 9</option>
+                        <option value="Class 10">Class 10</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="subject-filter">Subject:</label>
+                    <select 
+                        id="subject-filter" 
+                        title="Select Subject"
+                        aria-label="Select Subject"
+                    >
+                        <option value="">All Subjects</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="Social Studies">Social Studies</option>
+                        <option value="Computer">Computer</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Languages">Languages</option>
+                        <option value="Technology">Technology</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="topic-filter">Topic:</label>
+                    <select 
+                        id="topic-filter" 
+                        title="Select Topic"
+                        aria-label="Select Topic"
+                    >
+                        <option value="">All Topics</option>
+                    </select>
+                </div>
+
+                <div class="filter-group search">
+                    <label for="search-input">Search:</label>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Search materials..." 
+                    >
+                </div>
+            </div>
+
+            <div id="materials-grid" class="materials-grid">
+                <!-- Materials will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add after the materials-tab div -->
+    <!-- <div class="tab-content" id="quiz-tab">
+        <div class="content-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="quiz-class-filter">Class:</label>
+                    <select id="quiz-class-filter">
+                        <option value="">Select Class</option>
+                        <option value="Class 6">Class 6</option>
+                        <option value="Class 7">Class 7</option>
+                        <option value="Class 8">Class 8</option>
+                        <option value="Class 9">Class 9</option>
+                        <option value="Class 10">Class 10</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="quiz-subject-filter">Subject:</label>
+                    <select id="quiz-subject-filter">
+                        <option value="">Select Subject</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="Social Studies">Social Studies</option>
+                        <option value="Computer">Computer</option>
+                        <option value="Geography">Geography</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="quiz-list" class="quiz-grid">
+                Quizzes will be loaded here -->
+                <!-- <div class="loading-message">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading available quizzes...</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Modal remains the same -->
+    <div id="content-modal" class="modal">
+        <div class="modal-content">
+            <div id="markdown-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Verify script loading and initialization
+        console.log('Student materials page loaded');
+        console.log('Topics data available:', window.topicsByClassAndSubject ? 'Yes' : 'No');
+        
+        // Initialize the topics when this content is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Student materials DOM loaded');
+            const classSelect = document.getElementById('class-filter');
+            const subjectSelect = document.getElementById('subject-filter');
+            
+            if (classSelect && subjectSelect) {
+                classSelect.addEventListener('change', (e) => {
+                    console.log('Class changed to:', e.target.value);
+                    updateTopics();
+                });
+                
+                subjectSelect.addEventListener('change', (e) => {
+                    console.log('Subject changed to:', e.target.value);
+                    updateTopics();
+                });
+            } else {
+                console.error('Select elements not found');
+            }
+        });
+    </script>
+
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/student_materials.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Student materials DOM loaded');
+            
+            // Debug Firebase initialization
+            console.log('Firebase apps:', firebase.apps.length);
+            console.log('Firebase database:', firebase.database() ? 'initialized' : 'not initialized');
+            
+            // Initialize StudentMaterials if not already initialized
+            if (!window.studentMaterials) {
+                console.log('Creating new StudentMaterials instance');
+                window.studentMaterials = new StudentMaterials();
+            }
+
+            // Wait for Firebase auth to be ready
+            firebase.auth().onAuthStateChanged((user) => {
+                console.log('Auth state changed:', user ? 'User logged in' : 'No user');
+                if (user && window.studentMaterials && !window.studentMaterials.initialized) {
+                    window.studentMaterials.init();
+                }
+            });
+        });
+    </script>
+</div> 

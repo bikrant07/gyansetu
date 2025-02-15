@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GyanSetu Materials</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/styles/navbar.css">
+    <link rel="stylesheet" href="/assets/styles/main.css">
+    <link rel="stylesheet" href="materials.css">
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Add marked.js before student.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Add this line to load the student.js file globally -->
+    <script src="js/student.js"></script>
+    <!-- Add QuizManager script -->
+    <script src="js/quiz_manager.js"></script>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+    <div id="content-container"></div>
+    
+    <script src="../components/navbar.js"></script>
+    <script>
+        // Firebase initialization
+        const firebaseConfig = {
+            apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+            authDomain: "gyansetu-6e83b.firebaseapp.com",
+            databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+            projectId: "gyansetu-6e83b",
+            storageBucket: "gyansetu-6e83b.firebasestorage.app",
+            messagingSenderId: "796398190152",
+            appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+            measurementId: "G-QPSS3KKZ91"
+        };
+        
+        // Initialize Firebase if not already initialized
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Wait for auth state to be ready
+        firebase.auth().onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? 'User logged in' : 'No user');
+            if (!user) {
+                window.location.href = '../login_page.html';
+                return;
+            }
+
+            // Initialize components after authentication
+            if (window.studentMaterials) {
+                window.studentMaterials.init();
+            }
+        });
+
+        // Add this debug log
+        console.log('Materials page loaded');
+    
+        window.addEventListener('load', () => {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (!userData) {
+                window.location.href = '../login_page.html';
+                return;
+            }
+    
+            // Load appropriate content based on role
+            if (userData.role === 'teacher') {
+                fetch('teacher_materials.html')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('content-container').innerHTML = html;
+                        
+                        // Add topics data structure for teachers
+                        window.topicsByClassAndSubject = {
+                            'Class 6': {
+                                'Mathematics': ['Numbers and Operations', 'Basic Algebra', 'Geometry', 'Data Handling'],
+                                'Science': ['Living World', 'Materials', 'The Earth', 'Natural Phenomena'],
+                                'English': ['Grammar', 'Literature', 'Writing', 'Reading Comprehension'],
+                                'Social Studies': ['History', 'Geography', 'Civics', 'Economics'],
+                                'Computer': ['Basic Computing', 'Word Processing', 'Internet Basics', 'Digital Safety'],
+                                'Geography': ['Maps and Globes', 'Landforms', 'Climate', 'Natural Resources']
+                            },
+                            'Class 7': {
+                                'Mathematics': ['Integers', 'Fractions and Decimals', 'Algebra', 'Geometry and Mensuration'],
+                                'Science': ['Living Systems', 'Matter and Chemical Changes', 'Physical Phenomena', 'Environment'],
+                                'English': ['Advanced Grammar', 'Creative Writing', 'Literature Analysis', 'Comprehension Skills'],
+                                'Social Studies': ['Medieval History', 'Democracy', 'Geography', 'Social Issues'],
+                                'Computer': ['Programming Basics', 'Spreadsheets', 'Digital Communication', 'Cyber Security'],
+                                'Geography': ['Environment', 'Human Settlements', 'Natural Resources', 'Weather and Climate']
+                            },
+                            'Class 8': {
+                                'Mathematics': ['Quadratic Equations', 'Linear Equations', 'Geometry', 'Data Analysis'],
+                                'Science': ['Cell Structure', 'Chemical Reactions', 'Force and Pressure', 'Energy'],
+                                'English': ['Advanced Literature', 'Essay Writing', 'Speech and Debate', 'Critical Analysis'],
+                                'Social Studies': ['Modern History', 'Constitution', 'Economics', 'World Geography'],
+                                'Computer': ['Web Development', 'Database Concepts', 'Digital Design', 'Network Basics'],
+                                'Geography': ['Physical Geography', 'Population', 'Industries', 'Environmental Conservation']
+                            },
+                            'Class 9': {
+                                'Mathematics': ['Number Systems', 'Polynomials', 'Coordinate Geometry', 'Statistics'],
+                                'Science': ['Matter', 'Life Processes', 'Motion', 'Natural Resources'],
+                                'English': ['Literature and Poetry', 'Writing Skills', 'Grammar', 'Communication Skills'],
+                                'Social Studies': ['Contemporary India', 'Democratic Politics', 'Economics', 'Disaster Management'],
+                                'Computer': ['Programming', 'Data Structures', 'Web Technologies', 'Computer Networks'],
+                                'Geography': ['Contemporary India', 'Climate', 'Natural Vegetation', 'Population']
+                            },
+                            'Class 10': {
+                                'Mathematics': ['Real Numbers', 'Polynomials', 'Trigonometry', 'Statistics and Probability'],
+                                'Science': ['Chemical Reactions', 'Life Processes', 'Electricity', 'Environmental Issues'],
+                                'English': ['Advanced Literature', 'Writing Applications', 'Grammar and Usage', 'Reading Skills'],
+                                'Social Studies': ['India and Contemporary World', 'Democratic Politics', 'Economics Development', 'Resource Management'],
+                                'Computer': ['Advanced Programming', 'Database Management', 'Cyber Ethics', 'Mobile Computing'],
+                                'Geography': ['Resources and Development', 'Agriculture', 'Manufacturing Industries', 'Lifelines of Economy']
+                            }
+                        };
+
+                        // Add updateTopics function for teachers
+                        window.updateTopics = function(prefix) {
+                            const classSelect = document.getElementById(`${prefix}-class`);
+                            const subjectSelect = document.getElementById(`${prefix}-subject`);
+                            const topicSelect = document.getElementById(`${prefix}-topic`);
+                            
+                            const selectedClass = classSelect.value;
+                            const selectedSubject = subjectSelect.value;
+                            
+                            // Clear existing topics
+                            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+                            
+                            if (selectedClass && selectedSubject && window.topicsByClassAndSubject[selectedClass]?.[selectedSubject]) {
+                                window.topicsByClassAndSubject[selectedClass][selectedSubject].forEach(topic => {
+                                    const option = document.createElement('option');
+                                    option.value = topic;
+                                    option.textContent = topic;
+                                    topicSelect.appendChild(option);
+                                });
+                            }
+                        };
+
+                        // Initialize tabs after content is loaded
+                        const tabBtns = document.querySelectorAll('.tab-btn');
+                        const tabContents = document.querySelectorAll('.tab-content');
+                        
+                        console.log('Found tabs:', tabBtns.length);
+                        console.log('Found contents:', tabContents.length);
+
+                        // Show first tab by default
+                        if (tabContents.length > 0) tabContents[0].classList.add('active');
+                        if (tabBtns.length > 0) tabBtns[0].classList.add('active');
+
+                        tabBtns.forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                console.log('Tab clicked:', btn.dataset.tab);
+                                
+                                // Remove active class from all tabs and contents
+                                tabBtns.forEach(b => b.classList.remove('active'));
+                                tabContents.forEach(content => content.classList.remove('active'));
+
+                                // Add active class to clicked tab and corresponding content
+                                btn.classList.add('active');
+                                const tabId = btn.getAttribute('data-tab');
+                                const contentElement = document.getElementById(`${tabId}-tab`);
+                                
+                                if (contentElement) {
+                                    contentElement.classList.add('active');
+                                    console.log('Activated content:', tabId);
+
+                                    // Initialize QuizManager when quiz tab is activated
+                                    if (tabId === 'quiz' && !window.quizManager) {
+                                        console.log('Initializing QuizManager for quiz tab');
+                                        try {
+                                            if (typeof QuizManager === 'undefined') {
+                                                console.error('QuizManager class not loaded');
+                                                return;
+                                            }
+                                        window.quizManager = new QuizManager();
+                                            console.log('QuizManager initialized successfully');
+                                        } catch (error) {
+                                            console.error('Error initializing QuizManager:', error);
+                                        }
+                                    }
+                                } else {
+                                    console.error('Content not found:', tabId);
+                                }
+                            });
+                        });
+
+                        // Initialize other functionality
+                        if (typeof updateTopics === 'function') {
+                            // Content tab filters
+                            const contentClass = document.getElementById('content-class');
+                            const contentSubject = document.getElementById('content-subject');
+                            const contentTopic = document.getElementById('content-topic');
+                            
+                            if (contentClass && contentSubject && contentTopic) {
+                                contentClass.addEventListener('change', () => {
+                                    updateTopics('content');
+                                    loadExistingContent(); // Reload filtered content
+                                    document.getElementById('topic-content-list').innerHTML = ''; // Clear if incomplete selection
+                                });
+                                
+                                contentSubject.addEventListener('change', () => {
+                                    updateTopics('content');
+                                    loadExistingContent(); // Reload filtered content
+                                    document.getElementById('topic-content-list').innerHTML = ''; // Clear if incomplete selection
+                                });
+                                
+                                contentTopic.addEventListener('change', () => {
+                                    loadExistingContent(); // Reload filtered content
+                                });
+                            }
+
+                            // Study Materials tab filters
+                            const materialClass = document.getElementById('material-class');
+                            const materialSubject = document.getElementById('material-subject');
+                            const materialTopic = document.getElementById('material-topic');
+                            
+                            if (materialClass && materialSubject && materialTopic) {
+                                materialClass.addEventListener('change', () => {
+                                    updateTopics('material');
+                                    loadStudyMaterials(); // Reload filtered materials
+                                    document.getElementById('study-materials-list').innerHTML = ''; // Clear if incomplete selection
+                                });
+                                
+                                materialSubject.addEventListener('change', () => {
+                                    updateTopics('material');
+                                    loadStudyMaterials(); // Reload filtered materials
+                                    document.getElementById('study-materials-list').innerHTML = ''; // Clear if incomplete selection
+                                });
+                                
+                                materialTopic.addEventListener('change', () => {
+                                    loadStudyMaterials(); // Reload filtered materials
+                                });
+                            }
+
+                            // Form submissions
+                            document.getElementById('topic-content-form')?.addEventListener('submit', submitTopicContent);
+                            document.getElementById('study-material-form')?.addEventListener('submit', submitStudyMaterial);
+
+                            // Initial clear
+                            document.getElementById('topic-content-list').innerHTML = '';
+                            document.getElementById('study-materials-list').innerHTML = '';
+                        }
+                    });
+            } else {
+                fetch('student_materials.html')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('content-container').innerHTML = html;
+                        
+                        // Initialize everything after content is loaded
+                        if (typeof updateTopics === 'function') {
+                            // Load materials
+                            loadMaterials();
+                            loadStudyMaterials();
+
+                            // Initialize tabs
+                            const tabBtns = document.querySelectorAll('.tab-btn');
+                            
+                            tabBtns.forEach(btn => {
+                                btn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    
+                                    // Remove active class from all tabs and contents
+                                    tabBtns.forEach(b => b.classList.remove('active'));
+                                    
+                                    const allContents = document.querySelectorAll('.tab-content');
+                                    allContents.forEach(content => content.classList.remove('active'));
+
+                                    // Add active class to clicked tab and corresponding content
+                                    btn.classList.add('active');
+                                    const contentId = `${btn.dataset.tab}-tab`;
+                                    
+                                    const contentElement = document.getElementById(contentId);
+                                    if (contentElement) {
+                                        contentElement.classList.add('active');
+                                    }
+                                });
+                            });
+
+                            // Add event listeners for filters
+                            const classSelect = document.getElementById('class-filter');
+                            const subjectSelect = document.getElementById('subject-filter');
+                            
+                            classSelect?.addEventListener('change', () => {
+                                updateTopics();
+                                filterMaterials();
+                            });
+                            
+                            subjectSelect?.addEventListener('change', () => {
+                                updateTopics();
+                                filterMaterials();
+                            });
+
+                            document.getElementById('topic-filter')?.addEventListener('change', filterMaterials);
+                            document.getElementById('search-input')?.addEventListener('input', filterMaterials);
+                            
+                            // Add event listeners for study materials filters
+                            document.getElementById('materials-class-filter')?.addEventListener('change', () => {
+                                updateMaterialsTopics();
+                                filterStudyMaterials();
+                            });
+                            document.getElementById('materials-subject-filter')?.addEventListener('change', () => {
+                                updateMaterialsTopics();
+                                filterStudyMaterials();
+                            });
+                            document.getElementById('materials-topic-filter')?.addEventListener('change', filterStudyMaterials);
+                            document.getElementById('materials-search')?.addEventListener('input', filterStudyMaterials);
+                        }
+                    });
+            }
+        });
+
+        async function submitTopicContent(e) {
+            e.preventDefault();
+            
+            try {
+                const file = document.getElementById('content-file').files[0];
+                if (!file) {
+                    alert('Please select a file to upload');
+                    return;
+                }
+
+                const classValue = document.getElementById('content-class').value;
+                const subjectValue = document.getElementById('content-subject').value;
+                const topicValue = document.getElementById('content-topic').value;
+
+                // First upload file to Firebase Storage
+                const storageRef = firebase.storage().ref();
+                const filePath = `content/${classValue}/${subjectValue}/${topicValue}/${file.name}`;
+                const fileRef = storageRef.child(filePath);
+                
+                // Upload the file
+                await fileRef.put(file);
+                
+                // Get the file URL
+                const fileUrl = await fileRef.getDownloadURL();
+
+                // Read the file content
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        // Create metadata object for Firestore
+                        const data = {
+                            class: classValue,
+                            subject: subjectValue,
+                            topic: topicValue,
+                            fileName: file.name,
+                            fileUrl: fileUrl,
+                            content: event.target.result,
+                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        // Upload metadata to Firestore
+                        await firebase.firestore().collection('topic_contents').add(data);
+                        alert('Content uploaded successfully!');
+                        e.target.reset();
+                        loadExistingContent();
+                    } catch (error) {
+                        alert('Error uploading content metadata: ' + error.message);
+                    }
+                };
+                
+                reader.readAsText(file);
+
+            } catch (error) {
+                alert('Error uploading file: ' + error.message);
+            }
+        }
+
+        // Update the loadExistingContent function to show file links
+        async function loadExistingContent() {
+            try {
+                const classValue = document.getElementById('content-class').value;
+                const subjectValue = document.getElementById('content-subject').value;
+                const topicValue = document.getElementById('content-topic').value;
+                const topicContentsList = document.getElementById('topic-content-list');
+
+                // Only show content if all filters are selected
+                if (!classValue || !subjectValue || !topicValue) {
+                    topicContentsList.innerHTML = `
+                        <div class="no-content-message">
+                            <i class="fas fa-filter"></i>
+                            <p>Please select Class, Subject and Topic to view content</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let query = firebase.firestore().collection('topic_contents')
+                    .where('class', '==', classValue)
+                    .where('subject', '==', subjectValue)
+                    .where('topic', '==', topicValue);
+
+                const topicContents = await query.get();
+
+                if (topicContents.empty) {
+                    topicContentsList.innerHTML = `
+                        <div class="no-content-message">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No content available for selected filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                topicContentsList.innerHTML = `
+                    <div class="content-list-header">
+                        <h2>Existing Contents</h2>
+                        <span class="content-count">${topicContents.size} items</span>
+                    </div>
+                    <div class="content-grid">
+                        ${topicContents.docs.map(doc => {
+                            const data = doc.data();
+                            return `
+                                <div class="content-card">
+                                    <div class="content-card-header">
+                                        <i class="fas fa-file-alt"></i>
+                                        <h3>${data.topic}</h3>
+                                    </div>
+                                    <div class="content-card-meta">
+                                        <span class="class-tag">${data.class}</span>
+                                        <span class="subject-tag">${data.subject}</span>
+                                    </div>
+                                    <div class="content-card-actions">
+                                        <a href="${data.fileUrl}" target="_blank" class="action-btn view-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button onclick="editTopicContent('${doc.id}')" class="action-btn edit-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteTopicContent('${doc.id}')" class="action-btn delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
+        }
+
+        // Add delete function that also removes the file from storage
+        async function deleteTopicContent(docId) {
+            if (confirm('Are you sure you want to delete this content?')) {
+                try {
+                    // Get the document data first
+                    const doc = await firebase.firestore().collection('topic_contents').doc(docId).get();
+                    const data = doc.data();
+
+                    // Delete file from Storage
+                    if (data.fileUrl) {
+                        const storageRef = firebase.storage().refFromURL(data.fileUrl);
+                        await storageRef.delete();
+                    }
+
+                    // Delete document from Firestore
+                    await firebase.firestore().collection('topic_contents').doc(docId).delete();
+                    
+                    alert('Content deleted successfully!');
+                    loadExistingContent();
+                } catch (error) {
+                    alert('Error deleting content: ' + error.message);
+                }
+            }
+        }
+
+        async function submitStudyMaterial(e) {
+            e.preventDefault();
+            
+            try {
+                const file = document.getElementById('material-file').files[0];
+                if (!file) {
+                    alert('Please select a file to upload');
+                    return;
+                }
+
+                const classValue = document.getElementById('material-class').value;
+                const subjectValue = document.getElementById('material-subject').value;
+                const topicValue = document.getElementById('material-topic').value;
+
+                // Upload file to Firebase Storage
+                const storageRef = firebase.storage().ref();
+                const filePath = `materials/${classValue}/${subjectValue}/${topicValue}/${file.name}`;
+                const fileRef = storageRef.child(filePath);
+                
+                // Upload the file
+                await fileRef.put(file);
+                
+                // Get the file URL
+                const fileUrl = await fileRef.getDownloadURL();
+
+                // Create metadata object for Firestore
+                const data = {
+                    class: classValue,
+                    subject: subjectValue,
+                    topic: topicValue,
+                    fileName: file.name,
+                    fileUrl: fileUrl,
+                    title: file.name.split('.')[0], // Use filename without extension as title
+                    uploadDate: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Upload metadata to Firestore
+                await firebase.firestore().collection('study_materials').add(data);
+                alert('Material uploaded successfully!');
+                e.target.reset();
+                loadStudyMaterials();
+
+            } catch (error) {
+                alert('Error uploading material: ' + error.message);
+            }
+        }
+
+        // Function to load and display study materials
+        async function loadStudyMaterials() {
+            try {
+                const classValue = document.getElementById('material-class').value;
+                const subjectValue = document.getElementById('material-subject').value;
+                const topicValue = document.getElementById('material-topic').value;
+                const studyMaterialsList = document.getElementById('study-materials-list');
+
+                // Only show materials if all filters are selected
+                if (!classValue || !subjectValue || !topicValue) {
+                    studyMaterialsList.innerHTML = `
+                        <div class="no-content-message">
+                            <i class="fas fa-filter"></i>
+                            <p>Please select Class, Subject and Topic to view materials</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let query = firebase.firestore().collection('study_materials')
+                    .where('class', '==', classValue)
+                    .where('subject', '==', subjectValue)
+                    .where('topic', '==', topicValue);
+
+                const studyMaterials = await query.get();
+
+                if (studyMaterials.empty) {
+                    studyMaterialsList.innerHTML = `
+                        <div class="no-content-message">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No materials available for selected filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                studyMaterialsList.innerHTML = `
+                    <div class="content-list-header">
+                        <h2>Existing Materials</h2>
+                        <span class="content-count">${studyMaterials.size} items</span>
+                    </div>
+                    <div class="content-grid">
+                        ${studyMaterials.docs.map(doc => {
+                            const data = doc.data();
+                            return `
+                                <div class="content-card">
+                                    <div class="content-card-header">
+                                        <i class="fas ${getFileIcon(data.fileName)}"></i>
+                                        <h3>${data.fileName}</h3>
+                                    </div>
+                                    <div class="content-card-meta">
+                                        <span class="class-tag">${data.class}</span>
+                                        <span class="subject-tag">${data.subject}</span>
+                                        <span class="topic-tag">${data.topic}</span>
+                                    </div>
+                                    <div class="content-card-actions">
+                                        <a href="${data.fileUrl}" target="_blank" class="action-btn view-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="${data.fileUrl}" download="${data.fileName}" class="action-btn download-btn">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <button onclick="deleteStudyMaterial('${doc.id}')" class="action-btn delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading study materials:', error);
+            }
+        }
+
+        // Helper function to get appropriate icon based on file type
+        function getFileIcon(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            switch(ext) {
+                case 'pdf': return 'fa-file-pdf';
+                case 'doc':
+                case 'docx': return 'fa-file-word';
+                case 'ppt':
+                case 'pptx': return 'fa-file-powerpoint';
+                case 'xls':
+                case 'xlsx': return 'fa-file-excel';
+                case 'jpg':
+                case 'jpeg':
+                case 'png': return 'fa-file-image';
+                default: return 'fa-file-alt';
+            }
+        }
+
+        // Function to delete study material
+        async function deleteStudyMaterial(docId) {
+            if (confirm('Are you sure you want to delete this material?')) {
+                try {
+                    // Get the document data first
+                    const doc = await firebase.firestore().collection('study_materials').doc(docId).get();
+                    const data = doc.data();
+
+                    // Delete file from Storage
+                    if (data.fileUrl) {
+                        const storageRef = firebase.storage().refFromURL(data.fileUrl);
+                        await storageRef.delete();
+                    }
+
+                    // Delete document from Firestore
+                    await firebase.firestore().collection('study_materials').doc(docId).delete();
+                    
+                    alert('Material deleted successfully!');
+                    loadStudyMaterials();
+                } catch (error) {
+                    alert('Error deleting material: ' + error.message);
+                }
+            }
+        }
+
+        // Add this after Firebase initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Materials page loaded');
+            // Check if quiz tab is active
+            const quizTab = document.getElementById('quiz-tab');
+            if (quizTab && quizTab.classList.contains('active')) {
+                console.log('Quiz tab is active - initializing QuizManager');
+                if (!window.quizManager) {
+                    window.quizManager = new QuizManager();
+                }
+            }
+        });
+
+        // Add after Firebase initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tabId = btn.getAttribute('data-tab');
+                    if (tabId === 'quiz') {
+                        console.log('Quiz tab activated');
+                        try {
+                            // Initialize QuizManager if not already initialized
+                            if (!window.quizManager) {
+                                console.log('Creating new QuizManager instance');
+                                window.quizManager = new QuizManager();
+                            }
+                        } catch (error) {
+                            console.error('Error initializing QuizManager:', error);
+                        }
+                    }
+                });
+            });
+
+            // Initialize QuizManager immediately if quiz tab is active
+            const quizTab = document.getElementById('quiz-tab');
+            if (quizTab && quizTab.classList.contains('active')) {
+                console.log('Quiz tab is active - initializing QuizManager');
+                if (!window.quizManager) {
+                    window.quizManager = new QuizManager();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cookies = document.cookie.split(';');
+            let preferredLanguage = 'en'; // Default language
+
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'preferredLanguage') {
+                    preferredLanguage = decodeURIComponent(value);
+                }
+            });
+
+            if (preferredLanguage !== 'en') {
+                changeLanguage(preferredLanguage);
+            }
+        });
+
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        function changeLanguage(lang) {
+            if (!lang) return;
+
+            // Set the language in a cookie
+            setCookie('preferredLanguage', lang, 365);
+
+            // Get Google Translate element
+            const googleTranslateElement = document.querySelector('#google_translate_element');
+            
+            if (googleTranslateElement) {
+                // Get the select element from Google Translate
+                const selectElement = googleTranslateElement.querySelector('select');
+                if (selectElement) {
+                    // Set the value and trigger change event
+                    selectElement.value = lang;
+                    selectElement.dispatchEvent(new Event('change'));
+                } else {
+                    // If select element is not found, use Google Translate API directly
+                    const iframe = document.querySelector('.goog-te-menu-frame');
+                    if (iframe) {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const select = iframeDoc.querySelector('select.goog-te-combo');
+                        if (select) {
+                            select.value = lang;
+                            select.dispatchEvent(new Event('change'));
+                        }
+                    }
+                }
+            }
+
+            // Use Google Translate API directly as fallback
+            if (typeof google !== 'undefined' && google.translate) {
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.value = lang;
+                    select.dispatchEvent(new Event('change'));
+                } else {
+                    google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: lang,
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: true,
+                    }, 'google_translate_element');
+                }
+            }
+        }
+    </script>
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+</body>
+</html>

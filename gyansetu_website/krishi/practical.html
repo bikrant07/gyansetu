@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Learning - Krishi</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<script>
+    // Check and apply theme before page loads
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark-theme');
+    }
+</script>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <button class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <a href="/" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>Krishi</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Learn</a>
+                <a href="practical.html" class="nav-link active">Practical Learning</a>
+                <a href="schemes.html" class="nav-link">Government Schemes</a>
+            </div>
+            
+            
+            <div class="action-buttons">
+                <button class="btn-icon" id="calculatorBtn" title="Farming Tools">
+                    <i class="fas fa-calculator"></i>
+                </button>
+                <button class="btn-icon" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text">Contribute</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="practical-learning">
+        <div class="practical-sections">
+            <!-- Video Tutorials Section -->
+            <section class="tutorial-section">
+                <h2>Video Tutorials</h2>
+                <div class="tutorial-filters">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="basic">Basic Techniques</button>
+                    <button class="filter-btn" data-category="advanced">Advanced Methods</button>
+                </div>
+                <div class="video-grid">
+                    <!-- Basic Techniques -->
+                    <div class="video-card" data-category="basic">
+                        <div class="video-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/yzjBKG6lMAs" 
+                                title="Basic Soil Preparation"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="video-content">
+                            <h3>Soil Preparation Basics</h3>
+                            <p>Learn fundamental techniques for preparing soil for cultivation</p>
+                            <div class="video-meta">
+                                <span class="duration"><i class="fas fa-clock"></i> 15:20</span>
+                                <button class="mark-complete">Mark as Complete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Methods -->
+                    <div class="video-card" data-category="advanced">
+                        <div class="video-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/Ulf8E1XnhgI?si=4s_ww1I8rbhZdnJ_" 
+                                title="Advanced Irrigation Systems"
+                                frameborder="0" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="video-content">
+                            <h3>Modern Irrigation Techniques</h3>
+                            <p>Advanced methods for efficient water management</p>
+                            <div class="video-meta">
+                                <span class="duration"><i class="fas fa-clock"></i> 25:45</span>
+                                <button class="mark-complete">Mark as Complete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-tracker">
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 0%"></div>
+                    </div>
+                    <span class="progress-text">0% Complete</span>
+                </div>
+            </section>
+
+            <!-- Interactive Exercises -->
+            <section class="exercises-section">
+                <h2>Practice Exercises</h2>
+                <div class="exercise-grid">
+                    <div class="exercise-card">
+                        <h3>Crop Planning Simulator</h3>
+                        <div class="exercise-content">
+                            <div class="simulation-area">
+                                <canvas id="cropPlanner" width="600" height="400"></canvas>
+                            </div>
+                            <div class="controls">
+                                <div class="tool-selection">
+                                    <select id="cropType">
+                                        <option value="wheat">Wheat</option>
+                                        <option value="rice">Rice</option>
+                                        <option value="corn">Corn</option>
+                                    </select>
+                                    <button class="tool-btn active" data-tool="plant">Plant</button>
+                                    <button class="tool-btn" data-tool="water">Water</button>
+                                    <button class="tool-btn" data-tool="remove">Remove</button>
+                                </div>
+                                <div class="simulation-controls">
+                                    <button id="nextDay">Next Day</button>
+                                    <button id="resetSimulation">Reset</button>
+                                </div>
+                                <div class="info-panel">
+                                    <p>Day: <span id="dayCount">1</span></p>
+                                    <p>Plants: <span id="plantCount">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz Section -->
+            <section class="quiz-section">
+                <h2>Knowledge Check</h2>
+                <div class="quiz-container">
+                    <div class="quiz-card">
+                        <h3>Soil Management Quiz</h3>
+                        <div class="quiz-question">
+                            <p>What is the ideal pH range for most crops?</p>
+                            <div class="options">
+                                <label><input type="radio" name="ph" value="a"> 3.0-4.0</label>
+                                <label><input type="radio" name="ph" value="b"> 6.0-7.0</label>
+                                <label><input type="radio" name="ph" value="c"> 8.0-9.0</label>
+                            </div>
+                            <button class="check-answer">Check Answer</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step-by-Step Guides -->
+            <section class="guides-section">
+                <h2>Practical Guides</h2>
+                <div class="guides-grid">
+                    <div class="guide-card">
+                        <div class="guide-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="guide-content">
+                            <h3>Seed Treatment Guide</h3>
+                            <div class="steps">
+                                <ol>
+                                    <li>Select healthy seeds</li>
+                                    <li>Clean and sort seeds</li>
+                                    <li>Apply fungicide treatment</li>
+                                    <li>Dry properly</li>
+                                </ol>
+                            </div>
+                            <button class="btn-details">View Details</button>
+                        </div>
+                    </div>
+                    <!-- More guide cards -->
+                </div>
+            </section>
+
+            <!-- Local Knowledge Section -->
+            <section class="local-knowledge">
+                <h2>Local Farming Wisdom</h2>
+                <div class="knowledge-grid">
+                    <div class="knowledge-card">
+                        <h3>Traditional Methods</h3>
+                        <ul>
+                            <li>Natural pest control using neem</li>
+                            <li>Local crop rotation patterns</li>
+                            <li>Indigenous seed preservation</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Success Stories -->
+            <section class="success-stories">
+                <h2>Farmer Success Stories</h2>
+                <div class="stories-grid">
+                    <article class="story-card">
+                        <img src="images/farmer1.jpg" alt="Farmer">
+                        <div class="story-content">
+                            <h3>Increased Yield Through Organic Methods</h3>
+                            <p>How a local farmer improved productivity using organic techniques</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Tools Modal -->
+    <div class="tools-modal" id="toolsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-calculator"></i> Farming Tools & Weather</h2>
+                <button class="close-modal" id="closeToolsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="weather-section">
+                    <div class="weather-card">
+                        <div class="weather-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Loading weather data...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculators-container">
+                    <div class="calculator-card">
+                        <div class="calculator-header">
+                            <i class="fas fa-seedling"></i>
+                            <h3>Seed Calculator</h3>
+                        </div>
+                        <div class="calculator-body">
+                            <div class="input-group">
+                                <label>Field Area (acres)</label>
+                                <input type="number" id="seedArea" min="0" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>Crop Type</label>
+                                <select id="seedCrop">
+                                    <option value="wheat">Wheat</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="corn">Corn</option>
+                                </select>
+                            </div>
+                            <button class="calc-btn" id="calculateSeeds">
+                                Calculate Seeds Required
+                            </button>
+                            <div id="seedResult" class="result"></div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-card">
+                        <div class="calculator-header">
+                            <i class="fas fa-tint"></i>
+                            <h3>Water Calculator</h3>
+                        </div>
+                        <div class="calculator-body">
+                            <div class="input-group">
+                                <label>Field Area (acres)</label>
+                                <input type="number" id="waterArea" min="0" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>Crop Stage</label>
+                                <select id="cropStage">
+                                    <option value="initial">Initial Stage</option>
+                                    <option value="mid">Mid Stage</option>
+                                    <option value="final">Final Stage</option>
+                                </select>
+                            </div>
+                            <button class="calc-btn" id="calculateWater">
+                                Calculate Water Required
+                            </button>
+                            <div id="waterResult" class="result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark-theme');
+            const isDark = document.documentElement.classList.contains('dark-theme');
+            localStorage.setItem('darkMode', isDark);
+            
+            // Update icon
+            const icon = document.querySelector('#themeToggle i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+
+        // Set initial icon state
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.querySelector('#themeToggle i').classList.replace('fa-moon', 'fa-sun');
+        }
+    </script>
+    <script src="js/practical.js"></script>
+    <script src="js/calculators.js"></script>
+</body>
+</html> 

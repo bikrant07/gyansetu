@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs - GyanSetu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .faq-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1a73e8;
+        }
+
+        .faq-categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            color: #1a73e8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .faq-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #eee;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background-color: #f8f9fa;
+        }
+
+        .faq-question h3 {
+            font-size: 1.1em;
+            margin: 0;
+            flex: 1;
+        }
+
+        .faq-question i {
+            color: #1a73e8;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-question {
+            background-color: #f8f9fa;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 20px;
+            max-height: 500px;
+        }
+
+        .still-have-questions {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .contact-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a73e8;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-option:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .faq-container {
+                padding: 20px;
+            }
+
+            .faq-question h3 {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="faq-container">
+        <div class="faq-header">
+            <h1>Frequently Asked Questions</h1>
+            <div class="search-box">
+                <input type="text" placeholder="Search FAQs...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <div class="faq-categories">
+            <button class="category-btn active">All</button>
+            <button class="category-btn">Getting Started</button>
+            <button class="category-btn">Courses</button>
+            <button class="category-btn">Technical</button>
+            <button class="category-btn">Payments</button>
+        </div>
+
+        <div class="faq-section">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>How do I create an account on GyanSetu?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Creating an account is simple:</p>
+                    <ol>
+                        <li>Click on the "Sign Up" button in the top right corner</li>
+                        <li>Fill in your basic information</li>
+                        <li>Verify your email address</li>
+                        <li>Complete your profile</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>What are the system requirements for using GyanSetu?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>GyanSetu is optimized for low-bandwidth environments. Minimum requirements:</p>
+                    <ul>
+                        <li>Internet connection: 2G or better</li>
+                        <li>Browser: Latest version of Chrome, Firefox, or Safari</li>
+                        <li>Device: Any smartphone, tablet, or computer</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>Are the courses available in multiple languages?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, our courses are available in multiple regional languages including:</p>
+                    <ul>
+                        <li>Hindi</li>
+                        <li>Bengali</li>
+                        <li>Telugu</li>
+                        <li>Tamil</li>
+                        <li>Marathi</li>
+                        <li>And more...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>How can I access content offline?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>To access content offline:</p>
+                    <ol>
+                        <li>Look for the download icon next to the course material</li>
+                        <li>Click to download while you have internet connection</li>
+                        <li>Access the content later from your "Downloads" section</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="still-have-questions">
+            <h2>Still Have Questions?</h2>
+            <p>We're here to help! Reach out to us through any of these channels:</p>
+            <div class="contact-options">
+                <a href="mailto:support@gyansetu.com" class="contact-option">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email Support</span>
+                </a>
+                <a href="tel:+919279098628" class="contact-option">
+                    <i class="fas fa-phone"></i>
+                    <span>Call Us</span>
+                </a>
+                <a href="#" class="contact-option">
+                    <i class="fas fa-comments"></i>
+                    <span>Live Chat</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle FAQ answers
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Category buttons
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                button.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-box input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.faq-item').forEach(item => {
+                const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

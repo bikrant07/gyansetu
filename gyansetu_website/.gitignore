@@ -1,0 +1,9 @@
+/build/
+/.dart_tool/
+/.flutter-plugins
+/.pub-cache/
+/.idea/
+node_modules/
+.next/
+dist/
+.env

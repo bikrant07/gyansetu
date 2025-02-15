@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Code Editor</h1>
+    </header>
+    <main>
+      <div class="controls">
+        <label for="language">Language:</label>
+        <select id="language">
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+          <option value="c">C</option>
+        </select>
+      </div>
+      <div id="editor" contenteditable="true"></div>
+      <button id="run">Run Code</button>
+      <pre id="output">Output will appear here...</pre>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+    </div>
+    
+    <!-- Load scripts in correct order -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/calculators.js"></script>
+    <script defer src="js/practical.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new App();
+            window.ui = new UIController();
+            window.farmingTools = new FarmingTools();
+        });
+    </script> 

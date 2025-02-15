@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agricultural Schemes - Gyansetu</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // Check and apply theme before page loads
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark-theme');
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>Gyansetu</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Learn</a>
+                <!-- <a href="practical.html" class="nav-link">Practical Learning</a> -->
+                <a href="schemes.html" class="nav-link active">Government Schemes</a>
+            </div>
+            
+            <!-- <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="schemeSearch" class="search-bar" placeholder="Search schemes...">
+            </div> -->
+            
+            <div class="action-buttons">
+                <button class="btn-icon" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="schemes-page">
+        <div class="schemes-container">
+            <section id="schemesSection" class="schemes-section">
+                <div class="schemes-header">
+                    <h1>Government Agricultural Schemes</h1>
+                    <p>Access information about latest government schemes and support programs for farmers</p>
+                </div>
+                <div id="schemesContainer" class="schemes-container"></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark-theme');
+            const isDark = document.documentElement.classList.contains('dark-theme');
+            localStorage.setItem('darkMode', isDark);
+            
+            // Update icon
+            const icon = document.querySelector('#themeToggle i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+
+        // Set initial icon state
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.querySelector('#themeToggle i').classList.replace('fa-moon', 'fa-sun');
+        }
+    </script>
+    <script src="js/government-schemes.js"></script>
+</body>
+</html> 

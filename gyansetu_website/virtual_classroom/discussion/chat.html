@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Discussion Forum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/assets/styles/navbar.css">
+  <link rel="stylesheet" href="/assets/styles/main.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+        <img src="/assets/images/app_logo.png" alt="GyanSetu Logo" class="nav-logo">
+        <span class="nav-title">GYANSETU</span>
+    </div>
+    
+    <div class="nav-links">
+        <a href="/index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="/e_library/index.html" class="nav-link"><i class="fas fa-book"></i> e-Library</a>
+        <a href="/virtual_classroom/Whiteboard/widget.html" target="_blank" class="nav-link"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+        <a href="/materials_page/materials.html" class="nav-link"><i class="fas fa-book"></i> Materials</a>
+        <a href="/virtual_classroom/discussion/chat.html" class="nav-link"><i class="fas fa-comments"></i> Discussion</a>
+    </div>
+
+    <div class="auth-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn" aria-label="User Profile" title="User Profile">
+          <i class="fas fa-user-circle"></i>
+          <span class="profile-name" id="profileName"></span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <div class="dropdown-header">
+            <img id="profileImage" alt="Profile" class="dropdown-profile-img">
+            <div class="dropdown-user-info">
+              <span class="dropdown-name" id="dropdownName"></span>
+              <span class="dropdown-role" id="dropdownRole"></span>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="/profile.html" class="dropdown-item">
+            <i class="fas fa-user"></i> My Profile
+          </a>
+ 
+          <div class="dropdown-item language-section">
+            <i class="fas fa-language"></i> Language
+            <select class="language-select" onchange="changeLanguage(this.value)" title="Select Language">
+              <option value="">Select Language</option>
+              <option value="en">English</option>
+              <option value="hi">हिंदी (Hindi)</option>
+              <option value="bn">বাংলা (Bengali)</option>
+              <option value="te">తెలుగు (Telugu)</option>
+              <option value="ta">தமிழ் (Tamil)</option>
+              <option value="mr">मराठी (Marathi)</option>
+              <option value="gu">ગુજરાતી (Gujarati)</option>
+              <option value="kn">ಕನ್ನಡ (Kannada)</option>
+              <option value="ml">മലയാളം (Malayalam)</option>
+              <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            </select>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="#" onclick="handleLogout()" class="dropdown-item text-danger">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <button class="nav-toggle" aria-label="Toggle navigation menu" title="Toggle menu">
+        <span class="hamburger"></span>
+    </button>
+</nav>
+
+  <div class="chat-container">
+    <div class="sidebar">
+      <div class="user-profile">
+        <h3>My Profile</h3>
+        <div id="current-user-name"></div>
+      </div>
+      <div class="online-users">
+        <h3>Online Users</h3>
+        <div id="users-list"></div>
+      </div>
+    </div>
+
+    <div class="main-chat">
+      <div class="chat-header">
+        <h2 id="chat-title">Public Discussion</h2>
+        <div id="google_translate_element"></div>
+      </div>
+      <div id="messages"></div>
+      <form id="message-form" class="message-form">
+        <div class="message-input-container">
+          <input type="text" id="message-input" placeholder="Type a message..." />
+          <label for="file-input" class="file-label">
+            <i class="fas fa-paperclip"></i>
+            <input type="file" id="file-input" accept="image/*,.pdf,.doc,.docx" style="display: none" />
+          </label>
+        </div>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+      authDomain: "gyansetu-6e83b.firebaseapp.com",
+      databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+      projectId: "gyansetu-6e83b",
+      storageBucket: "gyansetu-6e83b.firebasestorage.app",
+      messagingSenderId: "796398190152",
+      appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+      measurementId: "G-QPSS3KKZ91",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- App script -->
+  <script src="app.js"></script>
+
+  <!-- Add Google Translate scripts before closing body tag -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        },
+        "google_translate_element"
+      );
+    }
+  </script>
+  <script type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <script>
+    function changeLanguage(lang) {
+      // Set the Google Translate cookie with proper attributes
+      const domain = window.location.hostname;
+      setCookie("googtrans", `/en/${lang}`, {
+        domain: domain,
+        expires: new Date(
+          Date.now() + 365 * 24 * 60 * 60 * 1000
+        ).toUTCString(), // 1 year
+      });
+
+      // Load Google Translate script dynamically
+      if (!window.google || !window.google.translate) {
+        const script = document.createElement("script");
+        script.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+
+      // Initialize Google Translate
+      if (window.google && window.google.translate) {
+        const translateElement = new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: lang,
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+
+        // Trigger translation
+        const select = document.querySelector(".goog-te-combo");
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event("change"));
+        }
+      }
+
+      // Store language preference
+      try {
+        localStorage.setItem("preferredLanguage", lang);
+      } catch (e) {
+        console.warn("Could not save language preference:", e);
+      }
+    }
+
+    // Initialize language settings
+    document.addEventListener("DOMContentLoaded", () => {
+      // Set secure cookie attributes for existing cookies
+      const cookies = document.cookie.split(";");
+      cookies.forEach((cookie) => {
+        const [name, value] = cookie.trim().split("=");
+        if (name === "googtrans") {
+          setCookie(name, value);
+        }
+      });
+
+      // Load saved language preference
+      const savedLang = localStorage.getItem("preferredLanguage") || "en";
+      const langSelect = document.querySelector(".language-select");
+      if (langSelect) {
+        langSelect.value = savedLang;
+        changeLanguage(savedLang);
+      }
+    });
+
+    // Add meta tag for CSP
+    const meta = document.createElement("meta");
+    meta.httpEquiv = "Content-Security-Policy";
+    meta.content = "upgrade-insecure-requests";
+    document.head.appendChild(meta);
+  </script>
+
+  <!-- Update Google Translate script loading -->
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    async defer crossorigin="anonymous"></script>
+
+  <!-- Add this script before the closing body tag -->
+  <script>
+    function createMessage(message, isCurrentUser) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isCurrentUser ? 'sent' : 'received'}`;
+
+      // Create message header with just sender name and time
+      const header = document.createElement('div');
+      header.className = 'message-header';
+      header.innerHTML = `
+            <span class="sender-name">${message.sender}</span>
+            <span class="message-time">${formatTime(message.timestamp)}</span>
+        `;
+
+      // Create message content
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      content.textContent = message.text;
+
+      messageDiv.appendChild(header);
+      messageDiv.appendChild(content);
+
+      // Handle file attachments
+      if (message.fileUrl) {
+        const attachment = document.createElement('div');
+        attachment.className = 'file-attachment';
+
+        if (message.fileType?.startsWith('image/')) {
+          attachment.innerHTML = `
+                    <img src="${message.fileUrl}" alt="Attached image" 
+                        onclick="window.open('${message.fileUrl}', '_blank')"
+                        style="cursor: pointer;">
+                `;
+        } else {
+          const fileIcon = getFileIcon(message.fileType);
+          attachment.innerHTML = `
+                    <a href="${message.fileUrl}" target="_blank" class="file-link">
+                        <i class="fas ${fileIcon}"></i>
+                        <span>${message.fileName || 'Attachment'}</span>
+                    </a>
+                `;
+        }
+        content.appendChild(attachment);
+      }
+
+      // Add to messages container
+      const messagesContainer = document.getElementById('messages');
+      messagesContainer.appendChild(messageDiv);
+
+      // Scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      return messageDiv;
+    }
+
+    // Helper function to format timestamp
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (isSameDay(date, now)) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else if (isSameDay(date, yesterday)) {
+        return 'Yesterday ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else {
+        return date.toLocaleDateString([], {
+          month: 'short',
+          day: 'numeric'
+        }) + ' ' + date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+
+    function isSameDay(date1, date2) {
+      return date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear();
+    }
+
+    // Helper function to get appropriate file icon
+    function getFileIcon(fileType) {
+      if (!fileType) return 'fa-file';
+
+      if (fileType.startsWith('image/')) return 'fa-file-image';
+      if (fileType.startsWith('video/')) return 'fa-file-video';
+      if (fileType.startsWith('audio/')) return 'fa-file-audio';
+      if (fileType.includes('pdf')) return 'fa-file-pdf';
+      if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
+      if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
+      if (fileType.includes('powerpoint') || fileType.includes('presentation')) return 'fa-file-powerpoint';
+
+      return 'fa-file';
+    }
+
+    // Add typing indicator
+    function showTypingIndicator(userName) {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.innerHTML = `
+            <span>${userName} is typing</span>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        `;
+      document.getElementById('messages').appendChild(typingDiv);
+    }
+
+    function removeTypingIndicator() {
+      const typingIndicators = document.querySelectorAll('.typing-indicator');
+      typingIndicators.forEach(indicator => indicator.remove());
+    }
+
+    // Add system message
+    function addSystemMessage(text) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message system';
+      messageDiv.innerHTML = `
+            <div class="message-content">
+                ${text}
+            </div>
+        `;
+      document.getElementById('messages').appendChild(messageDiv);
+    }
+
+    // Handle file input change
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Show file name or preview
+        const fileName = document.createElement('div');
+        fileName.className = 'file-preview';
+        fileName.textContent = `Selected file: ${file.name}`;
+
+        const messageInput = document.getElementById('message-input');
+        messageInput.parentNode.insertBefore(fileName, messageInput.nextSibling);
+      }
+    });
+
+    // Initialize message form handling
+    document.getElementById('message-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const messageInput = document.getElementById('message-input');
+      const fileInput = document.getElementById('file-input');
+      const message = messageInput.value.trim();
+      const file = fileInput.files[0];
+
+      if (!message && !file) return;
+
+      // Clear inputs
+      messageInput.value = '';
+      fileInput.value = '';
+      const preview = document.querySelector('.file-preview');
+      if (preview) preview.remove();
+
+      // Handle message sending here
+      // You'll need to implement the actual message sending logic
+      // using your Firebase configuration
+    });
+  </script>
+
+  <!-- Add this before the closing body tag -->
+  <script>
+    // Mobile menu functionality
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      navLinks.classList.toggle('active');
+      document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+        navToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Update user info in the dropdown
+    function updateUserInfo(userData) {
+      document.querySelector('.profile-name').textContent = userData.name || 'User';
+      document.querySelector('#userName').textContent = userData.name || 'User';
+      document.querySelector('#userRole').textContent = `${userData.role || 'Student'}`;
+    }
+
+    // Call this when user data is loaded
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      updateUserInfo(userData);
+    }
+
+    // Language change function
+    function changeLanguage(lang) {
+      if (!lang) return;
+
+      const googleTranslateElement = document.querySelector('#google_translate_element');
+
+      if (googleTranslateElement) {
+        const selectElement = googleTranslateElement.querySelector('select');
+        if (selectElement) {
+          selectElement.value = lang;
+          selectElement.dispatchEvent(new Event('change'));
+        } else {
+          const iframe = document.querySelector('.goog-te-menu-frame');
+          if (iframe) {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const select = iframeDoc.querySelector('select.goog-te-combo');
+            if (select) {
+              select.value = lang;
+              select.dispatchEvent(new Event('change'));
+            }
+          }
+        }
+      }
+
+      if (typeof google !== 'undefined' && google.translate) {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event('change'));
+        } else {
+          google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: lang,
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: true,
+          }, 'google_translate_element');
+        }
+      }
+    }
+  </script>
+  <script>
+    // Get the userData from local storage
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    // Set the values in the HTML elements
+    document.getElementById('profileName').textContent = userData?.name || 'User';
+    document.getElementById('profileImage').src = userData?.profileImageUrl || '';
+    document.getElementById('dropdownName').textContent = userData?.name || 'User';
+    document.getElementById('dropdownRole').textContent = userData?.role || 'Student';
+  </script>
+</body>
+
+</html>

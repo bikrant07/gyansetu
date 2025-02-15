@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen/Video Recorder with Audio</title>
+    <!-- Include RecordRTC -->
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src * 'unsafe-inline' 'unsafe-eval';
+    script-src * 'unsafe-inline' 'unsafe-eval';
+    connect-src * wss://*.firebaseio.com;
+    img-src * data: blob: 'unsafe-inline';
+    frame-src 'self' blob:;
+    style-src * 'unsafe-inline';
+    media-src blob: mediastream:;
+    worker-src blob:;">
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        video {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .recording-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+        .recording-status.active {
+            background-color: #2ecc71;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        #downloadLink {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        #downloadLink:hover {
+            background-color: #27ae60;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .upload-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Screen/Video Recorder with Audio</h2>
+
+    <div id="recordingStatus" class="recording-status"></div>
+
+    <video id="preview" controls style="width: 80%; max-width: 800px; margin: 20px auto; display: block;"></video>
+    <div class="controls">
+        <a id="downloadLink" style="display: none;">Download Recording</a>
+        <button id="uploadButton" class="upload-btn" style="display: none;">Upload Recording</button>
+    </div>
+
+    <script>
+        let recorder;
+        let mediaStream;
+        const videoElement = document.getElementById('preview');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const downloadLink = document.getElementById('downloadLink');
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+            authDomain: "gyansetu-6e83b.firebaseapp.com",
+            databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+            projectId: "gyansetu-6e83b",
+            storageBucket: "gyansetu-6e83b.firebasestorage.app",
+            messagingSenderId: "796398190152",
+            appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+            measurementId: "G-QPSS3KKZ91"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        window.addEventListener('message', async (event) => {
+            if (event.data.type === 'auth-token') {
+                try {
+                    // Use the parent window's Firebase instance and auth state
+                    const parentUser = window.parent.firebase.auth().currentUser;
+                    if (parentUser) {
+                        // Copy the auth state from parent
+                        await firebase.auth().updateCurrentUser(parentUser);
+                        console.log('Authentication successful in recording iframe');
+                    }
+                } catch (error) {
+                    console.error('Error authenticating in recording iframe:', error);
+                }
+            }
+        });
+
+        async function startScreenRecording() {
+            try {
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                mediaStream = new MediaStream([
+                    ...screenStream.getVideoTracks(),
+                    ...audioStream.getAudioTracks()
+                ]);
+
+                videoElement.srcObject = mediaStream;
+
+                recorder = RecordRTC(mediaStream, {
+                    type: 'video',
+                    mimeType: 'video/webm'
+                });
+
+                recorder.startRecording();
+                recordingStatus.classList.add('active');
+            } catch (error) {
+                alert('Error capturing screen and audio: ' + error);
+                resetStatus();
+            }
+        }
+
+        async function startVideoRecording() {
+            try {
+                const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                mediaStream = videoStream;
+
+                videoElement.srcObject = mediaStream;
+
+                recorder = RecordRTC(mediaStream, {
+                    type: 'video',
+                    mimeType: 'video/webm'
+                });
+
+                recorder.startRecording();
+                recordingStatus.classList.add('active');
+            } catch (error) {
+                alert('Error capturing video and audio: ' + error);
+                resetStatus();
+            }
+        }
+
+        function stopRecording() {
+            if (recorder && recorder.state === 'recording') {
+                recorder.stopRecording(() => {
+                    const blob = recorder.getBlob();
+                    console.log('Recording stopped, blob created:', blob);
+                    
+                    // Stop all tracks
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    // Clear the existing srcObject
+                    videoElement.srcObject = null;
+                    
+                    // Create video URL and set it
+                    const videoUrl = URL.createObjectURL(blob);
+                    console.log('Video URL created:', videoUrl);
+                    
+                    videoElement.src = videoUrl;
+                    videoElement.style.display = 'block';
+                    videoElement.controls = true;
+                    videoElement.muted = false;
+                    
+                    // Wait for video to be loaded before playing
+                    videoElement.onloadedmetadata = () => {
+                        console.log('Video metadata loaded');
+                        videoElement.play()
+                            .then(() => console.log('Video playing'))
+                            .catch(err => console.error('Error playing video:', err));
+                    };
+                    
+                    // Create download link
+                    let filename = prompt("Enter a name for your recording:", "recording");
+                    filename = filename ? filename.trim() : "recording";
+                    
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = videoUrl;
+                    downloadLink.download = `${filename}.webm`;
+                    downloadLink.style.display = 'block';
+                    downloadLink.textContent = `Download ${filename}`;
+                    
+                    // Show upload button
+                    const uploadButton = document.getElementById('uploadButton');
+                    uploadButton.style.display = 'block';
+                    uploadButton.onclick = () => uploadRecording(blob, filename);
+                    
+                    recordingStatus.classList.remove('active');
+                });
+            }
+        }
+
+        function resetStatus() {
+            recordingStatus.classList.remove('active');
+            recordingStatus.style.backgroundColor = '#ccc';
+        }
+
+        // Add the upload functionality
+        async function uploadRecording(blob, filename) {
+            const uploadButton = document.getElementById('uploadButton');
+            try {
+                uploadButton.disabled = true;
+                uploadButton.textContent = 'Uploading...';
+
+                // Get current user from parent window
+                const user = window.parent.firebase.auth().currentUser;
+                if (!user) {
+                    throw new Error('Please login to upload recordings');
+                }
+
+                // Verify teacher status in Firestore's admins collection
+                const teacherDoc = await firebase.firestore()
+                    .collection('admins')
+                    .doc(user.uid)
+                    .get();
+
+                if (!teacherDoc.exists || teacherDoc.data().role !== 'teacher') {
+                    throw new Error('Only teachers can upload recordings');
+                }
+
+                const teacherData = teacherDoc.data();
+
+                // Get additional metadata
+                const subject = prompt('Enter subject:', '');
+                const description = prompt('Enter description:', '');
+                if (!subject || !description) {
+                    throw new Error('Subject and description are required');
+                }
+
+                // Create a storage reference with a unique filename
+                const storageRef = firebase.storage().ref();
+                const recordingRef = storageRef.child(`recordings/${Date.now()}_${user.uid}_${filename}.webm`);
+
+                // Upload the blob
+                const uploadTask = recordingRef.put(blob, {
+                    contentType: 'video/webm',
+                    customMetadata: {
+                        uploadedBy: user.uid,
+                        role: 'teacher'
+                    }
+                });
+
+                // Monitor upload progress
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        uploadButton.textContent = `Uploading: ${Math.round(progress)}%`;
+                    },
+                    (error) => {
+                        console.error('Upload error:', error);
+                        throw error;
+                    }
+                );
+
+                // Wait for upload to complete
+                await uploadTask;
+
+                // Get the download URL
+                const downloadURL = await recordingRef.getDownloadURL();
+
+                // Save metadata to Realtime Database
+                const recordingData = {
+                    title: filename,
+                    subject: subject,
+                    description: description,
+                    downloadURL: downloadURL,
+                    professor: teacherData.name || user.email,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    uploadedBy: user.uid,
+                    fileRef: recordingRef.fullPath
+                };
+
+                // Create a new reference for the recording metadata
+                const newRecordingRef = firebase.database().ref('recordings').push();
+                
+                // Save the data
+                await newRecordingRef.set(recordingData);
+                console.log('Recording metadata saved with ID:', newRecordingRef.key);
+
+                alert('Recording uploaded successfully!');
+                uploadButton.textContent = 'Upload Complete';
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload failed: ' + error.message);
+                uploadButton.textContent = 'Upload Failed';
+            } finally {
+                uploadButton.disabled = false;
+                setTimeout(() => {
+                    uploadButton.textContent = 'Upload Recording';
+                }, 3000);
+            }
+        }
+    </script>
+
+</body>
+</html>
+

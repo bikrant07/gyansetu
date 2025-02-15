@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - GyanSetu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .help-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .help-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .help-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .help-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .help-icon {
+            font-size: 2.5em;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
+        .help-card h3 {
+            margin-bottom: 15px;
+            color: #1a73e8;
+        }
+
+        .help-links {
+            list-style: none;
+        }
+
+        .help-links li {
+            margin-bottom: 10px;
+        }
+
+        .help-links a {
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .help-links a:hover {
+            color: #1a73e8;
+        }
+
+        .help-links i {
+            margin-right: 10px;
+            color: #1a73e8;
+        }
+
+        .contact-section {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .contact-option {
+            padding: 20px;
+        }
+
+        .contact-icon {
+            font-size: 2em;
+            color: #1a73e8;
+            margin-bottom: 15px;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #1a73e8;
+            border-radius: 25px;
+            font-size: 1.1em;
+            outline: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1a73e8;
+        }
+
+        @media (max-width: 768px) {
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="help-container">
+        <div class="help-header">
+            <h1>How Can We Help You?</h1>
+            <div class="search-box">
+                <input type="text" placeholder="Search for help...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <div class="help-grid">
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <h3>Getting Started</h3>
+                <ul class="help-links">
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Create an Account</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Course Navigation</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Using the Platform</a></li>
+                </ul>
+            </div>
+
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3>Technical Support</h3>
+                <ul class="help-links">
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>System Requirements</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Troubleshooting</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Network Issues</a></li>
+                </ul>
+            </div>
+
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Learning Resources</h3>
+                <ul class="help-links">
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Study Materials</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Video Tutorials</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right"></i>Practice Tests</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>Still Need Help?</h2>
+            <div class="contact-options">
+                <div class="contact-option">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Support</h3>
+                    <p>support@gyansetu.com</p>
+                </div>
+                <div class="contact-option">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Phone Support</h3>
+                    <p>+91 9279098628</p>
+                </div>
+                <div class="contact-option">
+                    <div class="contact-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Live Chat</h3>
+                    <p>Available 24/7</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

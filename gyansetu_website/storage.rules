@@ -1,0 +1,124 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isTeacher() {
+      return isSignedIn() && (
+        // Check Realtime Database
+        root.child('users').child(request.auth.uid).child('role').val() == 'teacher' ||
+        // Or check Firestore
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isAdmin() {
+      return request.auth != null && (
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)) ||
+        root.child('users').child(request.auth.uid).child('role').val() == 'teacher'
+      );
+    }
+
+    function isValidFileSize(maxSize) {
+      return request.resource.size <= maxSize;
+    }
+
+    // Materials folder rules
+    match /materials/{class}/{subject}/{topic}/{fileName} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher() && isValidFileSize(50 * 1024 * 1024);  // 50MB limit
+      allow update, delete: if isAdmin();  // Allow admins to update and delete
+    }
+
+    // Content folder rules
+    match /content/{class}/{subject}/{topic}/{fileName} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher() && isValidFileSize(5 * 1024 * 1024);  // 5MB limit
+      allow update, delete: if isAdmin();  // Allow admins to update and delete
+    }
+
+    // E-Library Rules
+    match /books/student/{allPaths=**} {
+      allow read: if isSignedIn();
+    }
+
+    match /books/teacher/{allPaths=**} {
+      allow read: if isTeacher();
+    }
+
+    // Topic Content Images
+    match /topic_contents/{class}/{subject}/{topic}/images/{imageFile} {
+      allow read: if true;  // Public read access for images
+      allow create: if isTeacher() && isValidFileSize(5 * 1024 * 1024);  // 5MB limit for images
+      allow update, delete: if isAdmin();
+    }
+
+    
+       // Rules for recordings
+     match /recordings/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.email_verified == true
+                   && request.resource.size < 500 * 1024 * 1024; // 500MB limit
+    }
+
+    // Profile Pictures
+    match /profile_pictures/{userId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() 
+          && request.auth.uid == userId
+          && isValidFileSize(5 * 1024 * 1024)  // 5MB limit
+          && request.resource.contentType.matches('image/.*');
+    }
+
+    // Chat Attachments
+    match /chat_attachments/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+          && isValidFileSize(10 * 1024 * 1024)  // 10MB limit
+          && request.resource.contentType.matches('image/.*|application/pdf');
+    }
+
+    // Whiteboard Drawings
+    match /whiteboard_drawings/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+          && isValidFileSize(2 * 1024 * 1024)  // 2MB limit
+          && request.resource.contentType.matches('image/.*');
+    }
+
+    // Topic Content
+    match /topic_contents/{class}/{subject}/{topic}/{fileName} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher() && isValidFileSize(5 * 1024 * 1024);  // 5MB limit
+      allow update, delete: if isAdmin();
+    }
+
+    // Add this new rule for transcripts
+    match /transcripts/{className}/{fileName} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() 
+                   && request.auth.token.email_verified == true
+                   && request.resource.size < 5 * 1024 * 1024; // 5MB limit for transcripts
+      allow update, delete: if isTeacher();
+    }
+
+    // Default deny for all other paths
+    match /{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if false;  // Deny write access by default for security
+    }
+    // Add CORS headers (documentation note: headers are not explicitly set in rules)
+      function corsHeaders() {
+        return {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Expose-Headers': 'Content-Length',
+          'Access-Control-Allow-Headers': 'Range'
+        };
+      }
+  }
+} 

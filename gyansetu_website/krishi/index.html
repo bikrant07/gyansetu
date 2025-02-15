@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyansetu - Learn Agriculture</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <button class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <a href="/" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>Krishi</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">Learn</a>
+                <!-- <a href="practical.html" class="nav-link">Practical Learning</a> -->
+                <a href="schemes.html" class="nav-link">Government Schemes</a>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchTopic" class="search-bar" placeholder="Search agricultural topics...">
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-icon" id="calculatorBtn" title="Farming Tools">
+                    <i class="fas fa-calculator"></i>
+                </button>
+                <button class="btn-icon" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text">Contribute</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Popular Topics</h3>
+            <div id="topicsList" class="topics-list">
+                <!-- Topics will be populated here -->
+            </div>
+        </aside>
+
+        <main class="content">
+            <div id="loader" class="loader">
+                <div class="spinner"></div>
+            </div>
+            <div id="articleContent" class="article-content">
+                <!-- Article content will be loaded here -->
+            </div>
+
+            <div class="farming-tools-container">
+                <section id="weatherSection" class="weather-section">
+                    <!-- Weather data will be populated here -->
+                </section>
+
+                <section id="calculatorSection" class="calculators-section">
+                    <!-- Calculator tools will be populated here -->
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div class="tools-modal" id="toolsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-calculator"></i> Farming Tools & Weather</h2>
+                <button class="close-modal" id="closeToolsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="weather-section">
+                    <div class="weather-card">
+                        <div class="weather-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Loading weather data...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculators-container">
+                    <div class="calculator-card">
+                        <div class="calculator-header">
+                            <i class="fas fa-seedling"></i>
+                            <h3>Seed Calculator</h3>
+                        </div>
+                        <div class="calculator-body">
+                            <div class="input-group">
+                                <label>Field Area (acres)</label>
+                                <input type="number" id="seedArea" min="0" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>Crop Type</label>
+                                <select id="seedCrop">
+                                    <option value="wheat">Wheat</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="corn">Corn</option>
+                                </select>
+                            </div>
+                            <button class="calc-btn" id="calculateSeeds">
+                                Calculate Seeds Required
+                            </button>
+                            <div id="seedResult" class="result"></div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-card">
+                        <div class="calculator-header">
+                            <i class="fas fa-tint"></i>
+                            <h3>Water Calculator</h3>
+                        </div>
+                        <div class="calculator-body">
+                            <div class="input-group">
+                                <label>Field Area (acres)</label>
+                                <input type="number" id="waterArea" min="0" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>Crop Stage</label>
+                                <select id="cropStage">
+                                    <option value="initial">Initial Stage</option>
+                                    <option value="mid">Mid Stage</option>
+                                    <option value="final">Final Stage</option>
+                                </select>
+                            </div>
+                            <button class="calc-btn" id="calculateWater">
+                                Calculate Water Required
+                            </button>
+                            <div id="waterResult" class="result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize theme and icon state
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark-theme');
+                const themeIcon = document.querySelector('#themeToggle i');
+                if (themeIcon) {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                }
+            }
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark-theme');
+            const isDark = document.documentElement.classList.contains('dark-theme');
+            localStorage.setItem('darkMode', isDark);
+        });
+    </script>
+    
+    
+    <!-- Load critical scripts first -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <!-- Load non-critical scripts after -->
+    <script defer src="js/calculators.js"></script>
+    <script defer src="js/practical.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new App();
+            window.app.initializeContribute();
+            window.ui = new UIController();
+        });
+    </script>
+
+    <!-- Add this right after body tag opens -->
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+</body>
+</html>

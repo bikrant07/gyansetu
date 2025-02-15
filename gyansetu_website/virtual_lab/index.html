@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Science Labs</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/assets/styles/navbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Add this to fix overlapping issues */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        main {
+            /* Add padding-top to prevent content from going under navbar */
+            padding-top: 80px; /* Adjust this value based on your navbar height */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                        url('/assets/images/science-bg.jpg');
+            background-size: cover;
+            padding: 100px 0;
+            margin-bottom: 60px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-badge {
+            background: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .class-selection {
+            margin-top: 40px;
+        }
+
+        /* Ensure cards don't overlap */
+        .class-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+    </style>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+</head>
+<body>
+    
+    <div id="navbar-container"></div>
+    <script src="/components/navbar.js"></script>
+
+    <main class="container">
+        <!-- Class Selection Section First -->
+        <section class="class-selection">
+            <h2 class="section-title">Select Your Class</h2>
+            <div class="class-grid">
+                <!-- Class 9 -->
+                <a href="classes/class9.html" class="class-card">
+                    <div class="card-content">
+                        <h3>Class 9</h3>
+                        <p class="subjects">Physics • Chemistry • Biology</p>
+                        <div class="experiment-info">
+                            <span class="experiment-count">12 Experiments</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="enter-lab">Enter Lab <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Class 10 -->
+                <a href="classes/class10.html" class="class-card">
+                    <div class="card-content">
+                        <h3>Class 10</h3>
+                        <p class="subjects">Physics • Chemistry • Biology</p>
+                        <div class="experiment-info">
+                       
+                            <span class="experiment-count">15 Experiments</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="enter-lab">Enter Lab <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Class 11 -->
+                <a href="classes/class11.html" class="class-card">
+                
+                    <div class="card-content">
+                        <h3>Class 11</h3>
+                        <p class="subjects">Physics • Chemistry • Biology</p>
+                        <div class="experiment-info">
+                            <span class="experiment-count">18 Experiments</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="enter-lab">Enter Lab <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Class 12 -->
+                <a href="classes/class12.html" class="class-card">
+                    <div class="card-content">
+                        <h3>Class 12</h3>
+                        <p class="subjects">Physics • Chemistry • Biology</p>
+                        <div class="experiment-info">
+                            <span class="experiment-count">20 Experiments</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="enter-lab">Enter Lab <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Features Section Below -->
+        <section class="features-section">
+            <h2 class="section-title">Why Choose Virtual Labs?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/images/microscope.svg" alt="Interactive">
+                    </div>
+                    <h3>Interactive Experiments</h3>
+                    <p>Experience hands-on learning with real-time simulations</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/images/device.svg" alt="Anywhere">
+                    </div>
+                    <h3>Learn Anywhere</h3>
+                    <p>Access labs from any device, anytime</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="assets/images/target.svg" alt="Progress">
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your learning journey effectively</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add this right after body tag opens -->
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js"></script>
+    
+</body>
+</html>

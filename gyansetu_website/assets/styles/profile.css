@@ -1,0 +1,521 @@
+:root {
+    --primary-color: #2e7d32;
+    --primary-light: #e8f5e9;
+    --primary-dark: #005005;
+    --primary-gradient: linear-gradient(135deg, #2e7d32 0%, #45904a 100%);
+    --secondary-gradient: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%);
+    --text-color: #202124;
+    --gray-light: #f8f9fa;
+    --gray-medium: #dadce0;
+    --border-color: #e0e0e0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--primary-light);
+    padding-top: 70px;
+}
+
+.profile-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.profile-page .profile-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    border: 4px solid var(--primary-color);
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.profile-picture:hover {
+    transform: scale(1.05);
+}
+
+.profile-page .profile-name {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.profile-page .profile-email {
+    color: var(--gray-medium);
+    margin-bottom: 1rem;
+}
+
+.profile-page .profile-role {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.bio-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    color: var(--primary-color);
+}
+
+.bio-text {
+    color: var(--gray-medium);
+    line-height: 1.6;
+}
+
+.learning-progress {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.progress-card {
+    background: var(--gray-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.progress-card:hover {
+    transform: translateY(-5px);
+}
+
+.progress-title {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--gray-medium);
+}
+
+.progress-date {
+    margin-top: 1rem;
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--gray-medium);
+}
+
+#imageUpload {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 1rem auto;
+    }
+
+    .profile-page .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-page .profile-picture {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-page .profile-name {
+        font-size: 1.5rem;
+    }
+}
+
+/* Add these new styles for edit functionality */
+.edit-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 5px;
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.edit-btn:hover {
+    transform: scale(1.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.bio-edit-container {
+    margin-top: 1rem;
+}
+
+.bio-input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 100px;
+    margin-bottom: 1rem;
+}
+
+.bio-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.edit-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.save-btn, .cancel-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.save-btn:hover {
+    background: #1557b0;
+}
+
+.cancel-btn {
+    background: var(--gray-light);
+    color: var(--text-color);
+}
+
+.cancel-btn:hover {
+    background: #e0e0e0;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Profile picture overlay */
+.profile-picture-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1rem;
+}
+
+.profile-picture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-picture-container:hover .profile-picture-overlay {
+    opacity: 1;
+}
+
+.profile-picture-overlay i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Add these styles for the cropper modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+}
+
+.cropper-container {
+    max-height: 70vh;
+    margin-bottom: 20px;
+}
+
+#cropPreview {
+    max-width: 100%;
+    max-height: 70vh;
+}
+
+/* Make sure modal is above navbar */
+#cropperModal {
+    z-index: 2000;
+}
+
+/* Update existing media queries and add new ones */
+@media (max-width: 1024px) {
+    .profile-container {
+        max-width: 90%;
+    }
+
+    .progress-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 1rem auto;
+        padding: 0 0.8rem;
+    }
+
+    .profile-page .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-page .profile-picture-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-page .profile-picture {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-page .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .progress-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .bio-section, .learning-progress {
+        padding: 1.5rem;
+    }
+
+    /* Modal responsive styles */
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .cropper-container {
+        max-height: 60vh;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .save-btn, .cancel-btn {
+        width: 100%;
+        padding: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        margin: 0.5rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .profile-page .profile-header {
+        padding: 1rem;
+    }
+
+    .profile-page .profile-name {
+        font-size: 1.3rem;
+    }
+
+    .profile-page .profile-email {
+        font-size: 0.9rem;
+    }
+
+    .profile-page .profile-role {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.8rem;
+    }
+
+    .bio-text {
+        font-size: 0.9rem;
+    }
+
+    .progress-title {
+        font-size: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .progress-date {
+        font-size: 0.8rem;
+    }
+
+    /* Bio edit container */
+    .bio-input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    /* Modal adjustments for very small screens */
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cropper-container {
+        flex: 1;
+        max-height: none;
+    }
+
+    #cropPreview {
+        max-height: none;
+    }
+}
+
+/* Add orientation specific styles */
+@media (max-height: 600px) and (orientation: landscape) {
+    .profile-container {
+        margin: 0.5rem auto;
+    }
+
+    .profile-page .profile-header {
+        padding: 1rem;
+    }
+
+    .profile-picture-container {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+    }
+
+    /* Adjust modal for landscape orientation */
+    .modal-content {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+        max-height: 95vh;
+    }
+
+    .cropper-container {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .edit-actions {
+        width: 120px;
+    }
+} 

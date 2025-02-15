@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GyanSetu Recordings</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <style>
+        .recording-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .filters {
+            margin: 20px;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="filters">
+        <select id="subjectFilter" title="Filter by subject" aria-label="Filter recordings by subject">
+            <option value="">All Subjects</option>
+        </select>
+        <input type="date" id="dateFilter" title="Filter by date" aria-label="Filter recordings by date" placeholder="Select date">
+        <button onclick="applyFilters()" aria-label="Apply filters">Apply Filters</button>
+    </div>
+
+    <div id="recordingsList"></div>
+
+    <script>
+          const firebaseConfig = {
+            apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+            authDomain: "gyansetu-6e83b.firebaseapp.com",
+            databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+            projectId: "gyansetu-6e83b",
+            storageBucket: "gyansetu-6e83b.firebasestorage.app",
+            messagingSenderId: "796398190152",
+            appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+            measurementId: "G-QPSS3KKZ91"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.database();
+        
+        async function loadRecordings() {
+            const recordingsRef = db.ref('recordings');
+            recordingsRef.on('value', (snapshot) => {
+                const recordings = snapshot.val();
+                displayRecordings(recordings);
+                updateSubjectFilter(recordings);
+            });
+        }
+
+        function displayRecordings(recordings) {
+            const container = document.getElementById('recordingsList');
+            container.innerHTML = '';
+
+            Object.entries(recordings).forEach(([id, recording]) => {
+                const card = document.createElement('div');
+                card.className = 'recording-card';
+                card.innerHTML = `
+                    <h3>${recording.title}</h3>
+                    <p>${recording.description}</p>
+                    <p>Subject: ${recording.subject}</p>
+                    <p>Professor: ${recording.professor}</p>
+                    <p>Date: ${new Date(recording.timestamp).toLocaleDateString()}</p>
+                    <button class="download-btn" onclick="downloadRecording('${recording.downloadURL}', '${recording.title}')">
+                        Download Recording
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function downloadRecording(url, title) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Load recordings when page loads
+        document.addEventListener('DOMContentLoaded', loadRecordings);
+    </script>
+</body>
+</html> 

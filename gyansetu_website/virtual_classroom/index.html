@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GyanSetu Virtual Classroom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script
+      src="https://8x8.vc/vpaas-magic-cookie-917959a8cef749a79f042ee34b5d2009/external_api.js"
+      async
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/speech-to-text.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBefCseazfTmzGK7MGryt9AWxvEG_tppLI",
+        authDomain: "gyansetu-6e83b.firebaseapp.com",
+        databaseURL: "https://gyansetu-6e83b-default-rtdb.firebaseio.com",
+        projectId: "gyansetu-6e83b",
+        storageBucket: "gyansetu-6e83b.firebasestorage.app",
+        messagingSenderId: "796398190152",
+        appId: "1:796398190152:web:e54de3f69f16605a3c227d",
+        measurementId: "G-QPSS3KKZ91",
+      };
+
+      // Initialize Firebase only if it hasn't been initialized
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      // Initialize Firestore
+      const db = firebase.firestore();
+    </script>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+    default-src * 'unsafe-inline' 'unsafe-eval'; 
+    script-src * 'unsafe-inline' 'unsafe-eval'; 
+    connect-src * 'unsafe-inline'; 
+    img-src * data: blob: 'unsafe-inline'; 
+    frame-src * 'self' blob: https://*.google.com https://accounts.google.com https://content.googleapis.com https://*.8x8.vc https://8x8.vc; 
+    style-src * 'unsafe-inline'; 
+    media-src * blob: mediastream: https://*.googleapis.com https://*.firebasestorage.googleapis.com;
+    worker-src blob:;"
+    />
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,bn,te,ta,mr,gu,kn,ml,pa",
+            layout: google.translate.TranslateElement.FloatPosition.TOP_LEFT,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+  </head>
+
+  <body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../assets/images/app_logo.png" alt="GyanSetu Logo" class="nav-logo">
+            <span class="nav-title">GYANSETU</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/index.html"><i class="fas fa-home"></i> Home</a>
+            <div class="nav-dropdown">
+              <div class="dropdown-link">
+                  <div>
+                      <i class="fas fa-book"></i>
+                      <span>ERMS</span>
+                  </div>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="dropdown-content">
+                  <a href="/e_library/index.html">
+                      <i class="fas fa-book-reader"></i>
+                      <span>e-Library</span>
+                  </a>
+                  <a href="/materials_page/materials.html">
+                      <i class="fas fa-file-alt"></i>
+                      <span>Materials</span>
+                  </a>
+                  <a href="/code_editor/index.html">
+                    <i class="fas fa-code"></i>
+                    <span>Code Editor</span>
+                </a>
+              </div>
+          </div>
+            <li class="teacher-only">
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">
+                        <i class="fas fa-video"></i> Recordings
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="event.preventDefault(); startRecording('screen')">
+                            <i class="fas fa-desktop"></i> Record Audio + Screen
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); startRecording('video')">
+                            <i class="fas fa-video"></i> Record Audio + Video
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); controlRecording('pause')">
+                            <i class="fas fa-pause"></i> Pause Recording
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); controlRecording('stop')">
+                            <i class="fas fa-stop"></i> Stop & Save
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <!-- <a href="recordings/view-recordings.html" class="student-only"><i class="fas fa-play-circle"></i> View Recordings</a> -->
+            <a href="whiteboard/widget.html" target="_blank"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+            <a href="/virtual_lab/index.html" class="nav-link"><i class="fas fa-flask"></i> Virtual Lab</a>
+            <a href="discussion/chat.html"><i class="fas fa-comments"></i> Discussion</a>
+        </div>
+
+        <div class="auth-section">
+          <div class="profile-dropdown">
+            <button class="profile-btn">
+              <i class="fas fa-user-circle"></i>
+              <span class="profile-name" id="profileName"></span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <div class="dropdown-header">
+                <img id="profileImage" alt="Profile" class="dropdown-profile-img">
+                <div class="dropdown-user-info">
+                  <span class="dropdown-name" id="dropdownName"></span>
+                  <span class="dropdown-role" id="dropdownRole"></span>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="/profile.html" class="dropdown-item">
+                <i class="fas fa-user"></i> My Profile
+              </a>
+     
+              <div class="dropdown-item language-section">
+                <i class="fas fa-language"></i> Language
+                <select class="language-select" onchange="changeLanguage(this.value)">
+                  <option value="">Select Language</option>
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                  <option value="bn">বাংলা (Bengali)</option>
+                  <option value="te">తెలుగు (Telugu)</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                  <option value="gu">ગુજરાતી (Gujarati)</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                  <option value="ml">മലയാളം (Malayalam)</option>
+                  <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                </select>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="#" onclick="handleLogout()" class="dropdown-item text-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button class="nav-toggle" aria-label="Toggle navigation menu" title="Toggle menu">
+            <span class="hamburger"></span>
+        </button>
+    </nav>
+
+    <div id="floating-controls" style="display: none" class="floating-panel">
+      <div class="recording-indicator"></div>
+      <span id="recording-time">00:00</span>
+      <button onclick="controlRecording('stop')" class="stop-btn">
+        Stop Recording
+      </button>
+    </div>
+
+    <section id="hero">
+      <div class="hero-content">
+        <h1>Welcome to GYANSETU Virtual Classroom</h1>
+        <p>Access quality education regardless of connectivity issues.</p>
+      </div>
+    </section>
+
+    <section id="classes" class="section">
+      <div class="section-header">
+        <h2>Available Classes</h2>
+        <p class="section-description">
+          Join live interactive sessions with our expert teachers
+        </p>
+      </div>
+
+      <div class="class-list">
+        <div class="class-card">
+          <div class="class-header">
+            <div class="class-status live">LIVE</div>
+            <h3>Mathematics</h3>
+          </div>
+          <div class="class-content">
+            <div class="class-info">
+              <span><i class="fas fa-user"></i> Prof. Sarah Johnson</span>
+              <span><i class="fas fa-clock"></i> 10:00 AM</span>
+              <span><i class="fas fa-book"></i> Algebra</span>
+            </div>
+            <div class="class-actions">
+              <button
+                class="btn start-class-btn"
+                onclick="startClass('Mathematics')"
+              >
+                Start Class
+              </button>
+              <button class="btn join-class-btn" onclick="joinClass('Mathematics')">
+                Join Class
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-header">
+            <div class="class-status upcoming">Upcoming</div>
+            <h3>Physics</h3>
+          </div>
+          <div class="class-content">
+            <div class="class-info">
+              <span><i class="fas fa-user"></i> Dr. Michael Chen</span>
+              <span><i class="fas fa-clock"></i> 11:30 AM</span>
+              <span><i class="fas fa-book"></i> Mechanics</span>
+            </div>
+            <div class="class-actions">
+              <button class="btn start-class-btn" onclick="startClass('Physics')">
+                Start Class
+              </button>
+              <button class="btn join-class-btn" onclick="joinClass('Physics')">
+                Join Class
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      id="jitsi-container"
+      style="display: none; width: 100%; height: 600px"
+    ></div>
+
+    <section id="recordings" class="section student-only">
+      <div class="section-header">
+        <h2>Recorded Lessons</h2>
+        <p class="section-description">
+          Access previous classes and study materials
+        </p>
+      </div>
+
+      <div class="recordings-list">
+        <!-- Recordings will be loaded here dynamically -->
+      </div>
+    </section>
+
+    <section id="recording-interface" style="display: none">
+      <!-- This iframe will load record.html and provide the recording interface -->
+      <iframe
+        id="recordingIframe"
+        src="recordings/record.html"
+        style="width: 100%; height: 400px; border: none"
+      ></iframe>
+    </section>
+
+    <footer id="contact">
+      <p>Contact us at: support@gyansetu.in</p>
+    </footer>
+
+    <script>
+      window.addEventListener('load', () => {
+        // Clear session flags
+        sessionStorage.removeItem('loginInProgress');
+        
+        const userData = localStorage.getItem('userData');
+        if (!userData) {
+          console.log("No user data found, redirecting to login");
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace('/login_page.html');
+          return;
+        }
+
+        // Initialize the app
+        const user = firebase.auth().currentUser;
+        if (user) {
+          console.log("Initializing app with user:", user.uid);
+          initializeApp(user);
+        } else {
+          console.log("Waiting for auth state...");
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              console.log("Auth state received, initializing app");
+              initializeApp(user);
+            } else {
+              console.log("No user found, redirecting to login");
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.replace('/login_page.html');
+            }
+          });
+        }
+      });
+
+      let currentUser = null;
+      let userRole = null;
+
+      // Function to update UI based on role
+      function updateUIForRole(role) {
+        if (role === "student") {
+          document.querySelectorAll(".student-only").forEach((el) => {
+            el.style.display = "block";
+            console.log("Made student element visible:", el);
+          });
+          document.querySelectorAll(".teacher-only").forEach((el) => {
+            el.style.display = "none";
+          });
+          document.querySelectorAll(".start-class-btn").forEach((el) => {
+            el.style.display = "none";
+          });
+          document.querySelectorAll(".join-class-btn").forEach((el) => {
+            el.style.display = "block";
+          });
+        } else if (role === "teacher") {
+          document.querySelectorAll(".teacher-only").forEach((el) => {
+            el.style.display = "block";
+          });
+          document.querySelectorAll(".student-only").forEach((el) => {
+            el.style.display = "none";
+          });
+          document.querySelectorAll(".start-class-btn").forEach((el) => {
+            el.style.display = "block";
+          });
+          document.querySelectorAll(".join-class-btn").forEach((el) => {
+            el.style.display = "none";
+          });
+        }
+      }
+
+      // Logout handler
+      async function handleLogout() {
+        try {
+          // Clear all stored data
+          localStorage.clear();
+          sessionStorage.clear();
+          
+          // Sign out from Firebase
+          await firebase.auth().signOut();
+          
+          // Redirect to login page
+          window.location.href = "/login_page.html";
+        } catch (error) {
+          console.error("Error signing out:", error);
+          alert("Error signing out. Please try again.");
+        }
+      }
+
+      // Update startClass function
+      async function startClass(className) {
+        if (!currentUser) {
+            alert("Please login first");
+            return;
+        }
+
+        // Request microphone permission first
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop()); // Stop the stream after getting permission
+            
+            const container = document.getElementById("jitsi-container");
+            container.style.display = "block";
+            container.scrollIntoView({ behavior: "smooth" });
+
+            // Initialize speech-to-text if not already initialized
+            if (!speechToTextManager) {
+                speechToTextManager = new SpeechToTextManager();
+            }
+            // Start transcription automatically
+            speechToTextManager.startRecording();
+
+            const domain = "8x8.vc";
+            const options = {
+              roomName:
+                "vpaas-magic-cookie-917959a8cef749a79f042ee34b5d2009/GyanSetu_" +
+                className.replace(" ", "_"),
+              width: "100%",
+              height: "100%",
+              parentNode: container,
+              lang: "en",
+              userInfo: {
+                displayName: currentUser.displayName || "User",
+                role: userRole,
+              },
+              configOverwrite: {
+                startWithAudioMuted: true,
+                startWithVideoMuted: true,
+                enableClosePage: true,
+                disableDeepLinking: true,
+              },
+              interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: [
+                  "microphone",
+                  "camera",
+                  "closedcaptions",
+                  "desktop",
+                  "fullscreen",
+                  "fodeviceselection",
+                  "hangup",
+                  "profile",
+                  "chat",
+                  "recording",
+                  "livestreaming",
+                  "etherpad",
+                  "sharedvideo",
+                  "settings",
+                  "raisehand",
+                  "videoquality",
+                  "filmstrip",
+                  "invite",
+                  "feedback",
+                  "stats",
+                  "shortcuts",
+                  "tileview",
+                  "videobackgroundblur",
+                  "download",
+                  "help",
+                  "mute-everyone",
+                  "security",
+                ],
+                SETTINGS_SECTIONS: [
+                  "devices",
+                  "language",
+                  "moderator",
+                  "profile",
+                  "calendar",
+                ],
+                SHOW_JITSI_WATERMARK: false,
+                SHOW_WATERMARK_FOR_GUESTS: false,
+                DEFAULT_BACKGROUND: "#1a73e8",
+                DEFAULT_REMOTE_DISPLAY_NAME: "Student",
+                TOOLBAR_ALWAYS_VISIBLE: true,
+              },
+            };
+
+            try {
+              const api = new JitsiMeetExternalAPI(domain, options);
+              console.log("Jitsi API initialized successfully");
+
+              // Add event listener for when meeting ends
+              api.addEventListeners({
+                videoConferenceJoined: () => {
+                  console.log("Local user joined");
+                  // Update UI or perform actions when user joins
+                },
+                participantJoined: (participant) => {
+                  console.log("Remote participant joined:", participant);
+                  // Handle new participant
+                },
+                participantLeft: (participant) => {
+                  console.log("Participant left:", participant);
+                  // Handle participant leaving
+                },
+                readyToClose: () => {
+                  console.log("Call ended");
+                  container.style.display = "none";
+                  // Stop transcription when call ends
+                  if (speechToTextManager) {
+                    speechToTextManager.stopRecording();
+                  }
+                },
+                audioMuteStatusChanged: (muted) => {
+                  console.log("Audio muted:", muted);
+                },
+                videoMuteStatusChanged: (muted) => {
+                  console.log("Video muted:", muted);
+                },
+                error: (error) => {
+                  console.error("Jitsi error:", error);
+                  alert(
+                    "An error occurred with the video conference. Please try again."
+                  );
+                },
+              });
+
+              // Store API instance for later use
+              window.jitsiApi = api;
+            } catch (error) {
+              console.error("Error initializing Jitsi:", error);
+              alert("Failed to start video conference. Please try again.");
+              container.style.display = "none";
+              // Stop transcription if Jitsi fails to initialize
+              if (speechToTextManager) {
+                speechToTextManager.stopRecording();
+              }
+            }
+        } catch (error) {
+            console.error("Error getting microphone permission:", error);
+            alert("Microphone access is required for the class. Please allow microphone access and try again.");
+            return;
+        }
+      }
+
+      function joinClass(className) {
+        startClass(className);
+      }
+
+      // Add cleanup function when leaving the page
+      window.addEventListener("beforeunload", () => {
+        if (window.jitsiApi) {
+          window.jitsiApi.dispose();
+        }
+      });
+    </script>
+
+    <script>
+      let recordingTimer;
+      let recordingStartTime;
+
+      function startRecording(type) {
+        const recordingIframe = document.getElementById('recordingIframe');
+        const recordingSection = document.getElementById('recording-interface');
+        const floatingControls = document.getElementById('floating-controls');
+
+        // Get current user's token
+        firebase.auth().currentUser.getIdToken(true).then((token) => {
+            // Pass token to iframe
+            recordingIframe.onload = () => {
+                recordingIframe.contentWindow.postMessage({
+                    type: 'auth-token',
+                    token: token
+                }, '*');
+            };
+        });
+
+        // Show the recording interface and floating controls
+        recordingSection.style.display = 'block';
+        floatingControls.style.display = 'flex';
+
+        // Start the timer
+        recordingStartTime = Date.now();
+        startRecordingTimer();
+
+        // Call the appropriate recording function
+        if (type === "screen") {
+          recordingIframe.contentWindow.startScreenRecording();
+        } else if (type === "video") {
+          recordingIframe.contentWindow.startVideoRecording();
+        }
+      }
+
+      function controlRecording(action) {
+        const recordingIframe = document.getElementById("recordingIframe");
+        const floatingControls = document.getElementById("floating-controls");
+
+        if (action === "stop") {
+          recordingIframe.contentWindow.stopRecording();
+          floatingControls.style.display = "none";
+          clearInterval(recordingTimer);
+        }
+      }
+
+      function startRecordingTimer() {
+        const timeDisplay = document.getElementById("recording-time");
+
+        recordingTimer = setInterval(() => {
+          const elapsed = Date.now() - recordingStartTime;
+          const minutes = Math.floor(elapsed / 60000);
+          const seconds = Math.floor((elapsed % 60000) / 1000);
+          timeDisplay.textContent = `${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }, 1000);
+      }
+
+      // Add this at the top of your script
+      let recordingsLoaded = false;
+
+      // Then update the loadRecordings function
+      async function loadRecordings() {
+        if (recordingsLoaded) {
+            console.log("Recordings already loaded, skipping...");
+            return;
+        }
+        
+        if (!currentUser) {
+            console.error("No current user found");
+            return;
+        }
+
+        if (userRole !== 'student') {
+            console.log("Not loading recordings - User is not a student");
+            return;
+        }
+
+        console.log("Starting to load recordings...");
+        
+        const database = firebase.database();
+        const storage = firebase.storage();
+        const recordingsRef = database.ref('recordings');
+        const container = document.querySelector('.recordings-list');
+
+        if (!container) {
+            console.error("Recordings container not found");
+            return;
+        }
+
+        try {
+            console.log("Fetching recordings from database...");
+            const snapshot = await recordingsRef.once('value');
+            const recordings = snapshot.val();
+
+            console.log("Fetched recordings:", recordings);
+
+            container.innerHTML = ''; // Clear existing content
+
+            if (!recordings || Object.keys(recordings).length === 0) {
+                console.log("No recordings found in database");
+                container.innerHTML = '<p class="no-recordings">No recordings available yet.</p>';
+                return;
+            }
+
+            // Group recordings by professor
+            const recordingsByTeacher = {};
+            
+            Object.entries(recordings)
+                .map(([id, data]) => ({ id, ...data }))
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .forEach(recording => {
+                    const professor = recording.professor || 'Unknown Teacher';
+                    if (!recordingsByTeacher[professor]) {
+                        recordingsByTeacher[professor] = [];
+                    }
+                    recordingsByTeacher[professor].push(recording);
+                });
+
+            // Create sections for each teacher
+            for (const [professor, teacherRecordings] of Object.entries(recordingsByTeacher)) {
+                const teacherSection = `
+                    <div class="teacher-section">
+                        <div class="teacher-header" onclick="toggleTeacherRecordings(this)">
+                            <h3 class="teacher-name">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div class="teacher-info">
+                                    <span>${professor}'s Recordings</span>
+                                    <span class="video-count">${teacherRecordings.length} videos</span>
+                                </div>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </h3>
+                        </div>
+                        <div class="teacher-recordings">
+                            ${await Promise.all(teacherRecordings.map(async recording => {
+                                try {
+                                    const videoRef = storage.ref(recording.fileRef);
+                                    const videoUrl = await videoRef.getDownloadURL();
+                                    const date = new Date(recording.timestamp).toLocaleDateString();
+                                    
+                                    const videoContainer = `
+                                        <div class="video-container" onclick="this.querySelector('video').play()">
+                                            <video 
+                                                controls
+                                                preload="metadata"
+                                                controlsList="nodownload"
+                                                poster="${recording.thumbnailUrl || ''}"
+                                                loading="lazy"
+                                                playsinline
+                                                crossorigin="anonymous"
+                                                style="width: 100%; height: 100%;"
+                                            >
+                                                <source 
+                                                    src="${videoUrl}#t=0.1" 
+                                                    type="video/mp4" 
+                                                    size="1080"
+                                                >
+                                                <source 
+                                                    src="${videoUrl}#t=0.1" 
+                                                    type="video/webm" 
+                                                    size="1080"
+                                                >
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                    `;
+                                    
+                                    return `
+                                        <div class="recording-card">
+                                            <div class="recording-content">
+                                                <h4>${recording.title || 'Untitled Recording'}</h4>
+                                                <div class="recording-info">
+                                                    <span><i class="fas fa-book"></i> ${recording.subject || 'General'}</span>
+                                                    <span><i class="fas fa-calendar"></i> ${date}</span>
+                                                </div>
+                                                <div class="video-container">
+                                                    ${videoContainer}
+                                                </div>
+                                                ${recording.description ? `
+                                                    <div class="recording-description">
+                                                        <p>${recording.description}</p>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    `;
+                                } catch (error) {
+                                    console.error('Error loading recording:', recording.id, error);
+                                    return `
+                                        <div class="recording-card error">
+                                            <div class="recording-content">
+                                                <h4>Error Loading Recording</h4>
+                                                <p>There was an error loading this recording. Error: ${error.message}</p>
+                                                <button onclick="retryLoadRecording('${recording.id}')">Retry</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                            })).then(cards => cards.join(''))}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += teacherSection;
+            }
+        } catch (error) {
+            console.error('Error loading recordings:', error);
+            container.innerHTML = `
+                <p class="no-recordings error">
+                    Error loading recordings. Please try again later.<br>
+                    Error: ${error.message}
+                </p>
+            `;
+        }
+
+        recordingsLoaded = true; // Set the flag after successful load
+      }
+
+      // Add retry functions
+      async function retryLoadVideo(element, fileRef) {
+        try {
+          const storage = firebase.storage();
+          const videoRef = storage.ref(fileRef);
+          const videoUrl = await videoRef.getDownloadURL();
+          
+          const videoElement = `
+            <video 
+              controls
+              preload="metadata"
+              controlsList="nodownload"
+              class="video-player"
+              playsinline
+              webkit-playsinline
+            >
+              <source src="${videoUrl}" type="video/webm">
+              <source src="${videoUrl}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          `;
+          
+          element.parentElement.innerHTML = videoElement;
+        } catch (error) {
+          console.error('Error retrying video load:', error);
+          element.parentElement.innerHTML = `
+            <div class="video-error">
+              <p>Error loading video: ${error.message}</p>
+              <button onclick="retryLoadVideo(this, '${fileRef}')">Retry</button>
+            </div>
+          `;
+        }
+      }
+
+      async function retryLoadRecording(recordingId) {
+        try {
+          const recording = await firebase.database()
+            .ref(`recordings/${recordingId}`)
+            .once('value')
+            .then(snapshot => snapshot.val());
+            
+          if (recording) {
+            const container = document.querySelector(`[data-recording-id="${recordingId}"]`);
+            // Reload just this recording
+            // ... (implement similar to the individual recording loading logic)
+          }
+        } catch (error) {
+          console.error('Error retrying recording load:', error);
+        }
+      }
+
+      // Add these styles
+      const videoStyles = `
+        .video-error {
+          background: #fff5f5;
+          padding: 15px;
+          border-radius: 8px;
+          text-align: center;
+        }
+
+        .video-error button {
+          background: #1a73e8;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          margin-top: 10px;
+          cursor: pointer;
+        }
+
+        .video-error button:hover {
+          background: #1557b0;
+        }
+      `;
+
+      // Add the video styles to the existing style tag
+      document.querySelector('style').textContent += videoStyles;
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        let isMenuOpen = false;
+
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                isMenuOpen = !isMenuOpen;
+                navToggle.classList.toggle('active', isMenuOpen);
+                navLinks.classList.toggle('active', isMenuOpen);
+                
+                // Update ARIA attributes
+                navToggle.setAttribute('aria-expanded', isMenuOpen);
+                
+                // Prevent body scroll when menu is open
+                document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isMenuOpen && !navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+                    isMenuOpen = false;
+                    navToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    document.body.style.overflow = '';
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close menu when pressing Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isMenuOpen) {
+                    isMenuOpen = false;
+                    navToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    document.body.style.overflow = '';
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Prevent clicks inside menu from closing it
+            navLinks.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+    });
+    </script>
+
+    <script>
+    function changeLanguage(lang) {
+        if (!lang) return;
+        
+        // Get Google Translate element
+        const googleTranslateElement = document.querySelector('#google_translate_element');
+        
+        if (googleTranslateElement) {
+            // Get the select element from Google Translate
+            const selectElement = googleTranslateElement.querySelector('select');
+            if (selectElement) {
+                // Set the value and trigger change event
+                selectElement.value = lang;
+                selectElement.dispatchEvent(new Event('change'));
+            } else {
+                // If select element is not found, use Google Translate API directly
+                const iframe = document.querySelector('.goog-te-menu-frame');
+                if (iframe) {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const select = iframeDoc.querySelector('select.goog-te-combo');
+                    if (select) {
+                        select.value = lang;
+                        select.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+        }
+
+        // Use Google Translate API directly as fallback
+        if (typeof google !== 'undefined' && google.translate) {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: lang,
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: true,
+                }, 'google_translate_element');
+            }
+        }
+    }
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileBtn = document.querySelector('.profile-btn');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        const dropdownContent = profileDropdown.querySelector('.dropdown-content');
+        let timeoutId;
+
+        // Handle mouse enter/leave for desktop
+        profileDropdown.addEventListener('mouseenter', () => {
+            clearTimeout(timeoutId);
+            profileDropdown.classList.add('active');
+        });
+
+        dropdownContent.addEventListener('mouseenter', () => {
+            clearTimeout(timeoutId);
+            profileDropdown.classList.add('active');
+        });
+
+        profileDropdown.addEventListener('mouseleave', (e) => {
+            // Check if we're not moving to the dropdown content
+            if (!e.relatedTarget || !dropdownContent.contains(e.relatedTarget)) {
+                timeoutId = setTimeout(() => {
+                    profileDropdown.classList.remove('active');
+                }, 100); // Small delay to prevent flickering
+            }
+        });
+
+        // Handle click for mobile
+        profileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+
+        // Close dropdown when pressing Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                profileDropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent clicks inside dropdown from closing it
+        dropdownContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+    </script>
+
+    <script>
+      function initializeApp(user) {
+        currentUser = user;
+        console.log("Current user:", currentUser);
+
+        // Get user's role
+        db.collection("users")
+          .doc(user.uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              userRole = doc.data().role;
+              console.log("User role:", userRole);
+              
+              // First update UI based on role
+              updateUIForRole(userRole);
+
+              // Then load recordings if user is a student
+              if (userRole === "student") {
+                console.log("Loading recordings for student");
+                // Add a small delay to ensure DOM is ready
+                setTimeout(() => {
+                  loadRecordings();
+                }, 100);
+              }
+
+              // Update user display name
+              const userDisplayName = document.getElementById("userDisplayName");
+              const userName = document.getElementById("userName");
+              if (userDisplayName && userName) {
+                userDisplayName.textContent = user.displayName || "User";
+                userName.textContent = user.displayName || "User";
+              }
+            } else {
+              console.error("User document not found");
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting user role:", error);
+          });
+      }
+    </script>
+
+    <script>
+      // Get the userData from local storage
+      const userData = JSON.parse(localStorage.getItem('userData'));
+
+      // Set the values in the HTML elements
+      document.getElementById('profileName').textContent = userData?.name || 'User';
+      document.getElementById('profileImage').src = userData?.profileImageUrl || '';
+      document.getElementById('dropdownName').textContent = userData?.name || 'User';
+      document.getElementById('dropdownRole').textContent = userData?.role || 'Student';
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileBtn = document.querySelector('.profile-btn');
+            const profileDropdown = document.querySelector('.profile-dropdown');
+            
+            // Toggle dropdown on click (especially for mobile)
+            profileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Profile dropdown handling
+        const profileBtn = document.querySelector('.profile-btn');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        const profileContent = profileDropdown.querySelector('.dropdown-content');
+        
+        // ERMS dropdown handling
+        const navDropdowns = document.querySelectorAll('.nav-dropdown');
+        
+        // Handle mobile menu
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        let isMenuOpen = false;
+
+        // Profile dropdown events
+        if (profileBtn && profileDropdown) {
+            let profileTimeoutId;
+
+            profileDropdown.addEventListener('mouseenter', () => {
+                clearTimeout(profileTimeoutId);
+                profileDropdown.classList.add('active');
+            });
+
+            profileContent.addEventListener('mouseenter', () => {
+                clearTimeout(profileTimeoutId);
+                profileDropdown.classList.add('active');
+            });
+
+            profileDropdown.addEventListener('mouseleave', (e) => {
+                if (!e.relatedTarget || !profileContent.contains(e.relatedTarget)) {
+                    profileTimeoutId = setTimeout(() => {
+                        profileDropdown.classList.remove('active');
+                    }, 100);
+                }
+            });
+
+            // Mobile handling for profile
+            profileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+        }
+
+        // ERMS dropdown events
+        navDropdowns.forEach(dropdown => {
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            let navTimeoutId;
+
+            dropdown.addEventListener('mouseenter', () => {
+                clearTimeout(navTimeoutId);
+                dropdown.classList.add('active');
+            });
+
+            if (dropdownContent) {
+                dropdownContent.addEventListener('mouseenter', () => {
+                    clearTimeout(navTimeoutId);
+                    dropdown.classList.add('active');
+                });
+
+                dropdown.addEventListener('mouseleave', (e) => {
+                    if (!e.relatedTarget || !dropdownContent.contains(e.relatedTarget)) {
+                        navTimeoutId = setTimeout(() => {
+                            dropdown.classList.remove('active');
+                        }, 100);
+                    }
+                });
+            }
+
+            // Mobile handling for nav dropdowns
+            const dropdownLink = dropdown.querySelector('.dropdown-link');
+            if (dropdownLink) {
+                dropdownLink.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.profile-dropdown')) {
+                profileDropdown.classList.remove('active');
+            }
+            navDropdowns.forEach(dropdown => {
+                if (!e.target.closest('.nav-dropdown')) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        });
+
+        // Close dropdowns on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                profileDropdown.classList.remove('active');
+                navDropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    });
+    </script>
+
+    <script>
+      // Add this function to test database access
+      async function testDatabaseAccess() {
+        try {
+          const database = firebase.database();
+          const recordingsRef = database.ref('recordings');
+          const snapshot = await recordingsRef.once('value');
+          console.log("Database test - Recordings data:", snapshot.val());
+          return true;
+        } catch (error) {
+          console.error("Database test failed:", error);
+          return false;
+        }
+      }
+
+      // Call this in initializeApp after setting userRole
+      if (userRole === 'student') {
+        testDatabaseAccess().then(success => {
+          if (success) {
+            loadRecordings();
+          } else {
+            console.error("Failed to access database, not loading recordings");
+          }
+        });
+      }
+    </script>
+
+    <script>
+      // Add this function after your existing scripts
+      function toggleTeacherRecordings(element) {
+        const recordingsDiv = element.nextElementSibling;
+        const toggleIcon = element.querySelector('.toggle-icon');
+        
+        // Toggle the active class instead of setting display directly
+        recordingsDiv.classList.toggle('active');
+        
+        // Update the icon rotation based on active state
+        if (recordingsDiv.classList.contains('active')) {
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+      }
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            const dropbtn = dropdown.querySelector('.dropbtn');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            
+            // For mobile devices
+            dropbtn.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Close other dropdowns
+                    dropdowns.forEach(other => {
+                        if (other !== dropdown) {
+                            other.classList.remove('active');
+                        }
+                    });
+                    
+                    dropdown.classList.toggle('active');
+                }
+            });
+
+            // For desktop hover persistence
+            if (dropdownContent) {
+                dropdownContent.addEventListener('mouseleave', () => {
+                    if (window.innerWidth > 768) {
+                        setTimeout(() => {
+                            if (!dropdown.matches(':hover')) {
+                                dropdown.classList.remove('active');
+                            }
+                        }, 100);
+                    }
+                });
+            }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+
+        // Close dropdowns on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    });
+    </script>
+
+    <script>
+      let speechToTextManager;
+
+      function initializeSpeechToText() {
+          speechToTextManager = new SpeechToTextManager();
+      }
+
+      // Initialize speech-to-text when the page loads
+      document.addEventListener('DOMContentLoaded', initializeSpeechToText);
+    </script>
+
+    <div id="google_translate_element" style="position: absolute; top: -1000px"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const cookies = document.cookie.split(';');
+          let preferredLanguage = 'en'; // Default language
+
+          cookies.forEach(cookie => {
+              const [name, value] = cookie.trim().split('=');
+              if (name === 'preferredLanguage') {
+                  preferredLanguage = decodeURIComponent(value);
+              }
+          });
+
+          if (preferredLanguage !== 'en') {
+              changeLanguage(preferredLanguage);
+          }
+      });
+
+      function setCookie(name, value, days) {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      }
+
+      function changeLanguage(lang) {
+          if (!lang) return;
+
+          // Set the language in a cookie
+          setCookie('preferredLanguage', lang, 365);
+
+          // Get Google Translate element
+          const googleTranslateElement = document.querySelector('#google_translate_element');
+          
+          if (googleTranslateElement) {
+              // Get the select element from Google Translate
+              const selectElement = googleTranslateElement.querySelector('select');
+              if (selectElement) {
+                  // Set the value and trigger change event
+                  selectElement.value = lang;
+                  selectElement.dispatchEvent(new Event('change'));
+              } else {
+                  // If select element is not found, use Google Translate API directly
+                  const iframe = document.querySelector('.goog-te-menu-frame');
+                  if (iframe) {
+                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                      const select = iframeDoc.querySelector('select.goog-te-combo');
+                      if (select) {
+                          select.value = lang;
+                          select.dispatchEvent(new Event('change'));
+                      }
+                  }
+              }
+          }
+
+          // Use Google Translate API directly as fallback
+          if (typeof google !== 'undefined' && google.translate) {
+              const select = document.querySelector('.goog-te-combo');
+              if (select) {
+                  select.value = lang;
+                  select.dispatchEvent(new Event('change'));
+              } else {
+                  google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: lang,
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: true,
+                  }, 'google_translate_element');
+              }
+          }
+      }
+    </script>
+  </body>
+</html>
