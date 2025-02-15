@@ -1,0 +1,107 @@
+# Name of the Flutter project.
+name: gyansetu_client
+
+# A short description of the project.
+description: "A new Flutter project."
+
+# This line prevents the package from being accidentally published to pub.dev. 
+# Useful for private projects.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# Version and build number for your application.
+# Format: major.minor.patch+build (e.g., 1.0.0+1)
+# - `version`: Semantic versioning to track updates.
+# - `build-number`: Increment for each release to ensure correct deployment.
+version: 1.0.0+1
+
+# Flutter environment setup.
+# Specify the Dart SDK version required by your project.
+environment:
+  sdk: ^3.5.4
+
+# Define the dependencies your project uses.
+dependencies:
+
+  # Flutter framework SDK.
+  flutter:
+    sdk: flutter
+
+  # Firebase dependencies for authentication, Firestore, core services, and storage.
+  firebase_auth: ^4.17.4
+  cloud_firestore: ^4.15.4
+  firebase_core: ^2.25.4
+  firebase_storage: ^11.6.5
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  firebase_database: ^10.4.0
+  http: ^1.2.0
+
+  # Add rxdart package
+  rxdart: ^0.27.7
+
+  image_picker: ^1.0.4  # For picking images from device storage or camera.
+  image_cropper: ^5.0.1 # For cropping images.
+  flutter_markdown: ^0.6.20
+  shared_preferences: ^2.2.2
+  google_generative_ai: ^0.2.0
+  url_launcher: ^6.1.14
+  intl: ^0.19.0
+  model_viewer_plus: ^1.7.0
+  nearby_connections: ^4.1.1
+  path_provider: ^2.1.2
+  cupertino_icons: ^1.0.8
+  connectivity_plus: ^5.0.2
+  just_audio: ^0.9.36
+
+  permission_handler: ^11.3.1
+  location: ^5.0.0
+  file_picker: ^6.1.1
+  app_settings: ^5.1.1
+  filesize: ^2.0.1
+  percent_indicator: ^4.2.3
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.0.5
+  flutter_image_compress: ^2.1.0
+  flutter_native_splash: ^2.3.7
+
+  # Replace carousel_slider with flutter_carousel_widget
+  flutter_carousel_widget: ^2.2.0
+
+  # Add webview_flutter instead
+  webview_flutter: ^4.7.0
+
+# Development-only dependencies.
+dev_dependencies:
+
+  # Flutter test framework for unit testing.
+  flutter_test:
+    sdk: flutter
+
+  # Linting rules to maintain code quality and consistency.
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+
+# Flutter-specific configuration.
+flutter:
+  # Enables the use of Material Design icons.
+  uses-material-design: true
+
+  # Assets declaration: Include directories for images and models.
+  assets:
+    - assets/images/
+    - assets/quiz_data/  # for accessing quiz datas for offline
+    - assets/models/
+    - assets/audio/
+    - assets/icons/
+    - assets/images/agriculture/
+
+  generate: true
+
+# Add flutter_intl configuration at root level
+flutter_intl:
+  enabled: true
+  main_locale: en
+  locales:
+    - en
+

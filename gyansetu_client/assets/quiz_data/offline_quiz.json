@@ -1,0 +1,267 @@
+{
+  "Class 6": {
+    "Mathematics": [
+      {
+        "question": "What is the sum of angles in a triangle?",
+        "options": ["90°", "180°", "270°", "360°"],
+        "correctAnswer": "180°"
+      },
+      {
+        "question": "What is the perimeter of a square with side length 5 cm?",
+        "options": ["10 cm", "15 cm", "20 cm", "25 cm"],
+        "correctAnswer": "20 cm"
+      }
+    ],
+    "Science": [
+      {
+        "question": "Which is the largest organ in the human body?",
+        "options": ["Heart", "Brain", "Skin", "Liver"],
+        "correctAnswer": "Skin"
+      },
+      {
+        "question": "What is the chemical formula for water?",
+        "options": ["H2O", "CO2", "O2", "N2"],
+        "correctAnswer": "H2O"
+      }
+    ],
+    "English": [
+      {
+        "question": "Which of these is a proper noun?",
+        "options": ["book", "London", "car", "happy"],
+        "correctAnswer": "London"
+      },
+      {
+        "question": "What is the plural of 'child'?",
+        "options": ["child", "childs", "children", "childes"],
+        "correctAnswer": "children"
+      }
+    ],
+    "Social Studies": [
+      {
+        "question": "Which is the largest continent?",
+        "options": ["Africa", "Asia", "Europe", "North America"],
+        "correctAnswer": "Asia"
+      },
+      {
+        "question": "What is the capital of India?",
+        "options": ["Mumbai", "Delhi", "Chennai", "Kolkata"],
+        "correctAnswer": "Delhi"
+      }
+    ]
+  },
+  "Class 7": {
+    "Mathematics": [
+      {
+        "question": "What is 35% of 200?",
+        "options": ["60", "70", "80", "90"],
+        "correctAnswer": "70"
+      },
+      {
+        "question": "What is the value of 3³?",
+        "options": ["6", "9", "27", "81"],
+        "correctAnswer": "27"
+      }
+    ],
+    "Science": [
+      {
+        "question": "What is the boiling point of water at sea level?",
+        "options": ["0°C", "50°C", "100°C", "200°C"],
+        "correctAnswer": "100°C"
+      },
+      {
+        "question": "What is the basic unit of life?",
+        "options": ["Tissue", "Organ", "Cell", "Molecule"],
+        "correctAnswer": "Cell"
+      }
+    ],
+    "English": [
+      {
+        "question": "What is the antonym of 'beautiful'?",
+        "options": ["ugly", "happy", "small", "clean"],
+        "correctAnswer": "ugly"
+      },
+      {
+        "question": "Which is a conjunction in the sentence: 'I will go if you come'? ",
+        "options": ["I", "will", "if", "you"],
+        "correctAnswer": "if"
+      }
+    ],
+    "Social Studies": [
+      {
+        "question": "Who was the first Prime Minister of India?",
+        "options": ["Mahatma Gandhi", "Jawaharlal Nehru", "Indira Gandhi", "Subhash Chandra Bose"],
+        "correctAnswer": "Jawaharlal Nehru"
+      },
+      {
+        "question": "Which is the longest river in the world?",
+        "options": ["Amazon", "Ganga", "Nile", "Yangtze"],
+        "correctAnswer": "Nile"
+      }
+    ]
+  },
+  "Class 8": {
+    "Mathematics": [
+      {
+        "question": "Solve: 2x + 3 = 9. What is the value of x?",
+        "options": ["1", "2", "3", "4"],
+        "correctAnswer": "3"
+      },
+      {
+        "question": "What is the square root of 144?",
+        "options": ["10", "11", "12", "13"],
+        "correctAnswer": "12"
+      }
+    ],
+    "Science": [
+      {
+        "question": "What is the chemical symbol for sodium?",
+        "options": ["S", "Na", "So", "Sa"],
+        "correctAnswer": "Na"
+      },
+      {
+        "question": "What type of energy is stored in a stretched rubber band?",
+        "options": ["Kinetic", "Potential", "Thermal", "Nuclear"],
+        "correctAnswer": "Potential"
+      }
+    ],
+    "English": [
+      {
+        "question": "What is a synonym for 'quick'?",
+        "options": ["slow", "fast", "calm", "quiet"],
+        "correctAnswer": "fast"
+      },
+      {
+        "question": "Which is the correct possessive form: The car of the boy?",
+        "options": ["The boy car", "The boy's car", "The boy' car", "The boys car"],
+        "correctAnswer": "The boy's car"
+      }
+    ],
+    "Social Studies": [
+      {
+        "question": "Who wrote the national anthem of India?",
+        "options": ["Rabindranath Tagore", "Bankim Chandra Chattopadhyay", "Sarojini Naidu", "Subhash Chandra Bose"],
+        "correctAnswer": "Rabindranath Tagore"
+      },
+      {
+        "question": "What is the main occupation of people in rural India?",
+        "options": ["Fishing", "Farming", "Mining", "Trade"],
+        "correctAnswer": "Farming"
+      }
+    ]
+  },
+  "Class 9": {
+    "Mathematics": [
+      {
+        "question": "What is the solution to the equation x² - 4 = 0?",
+        "options": ["-2, 2", "2, 4", "0, 2", "-4, 4"],
+        "correctAnswer": "-2, 2"
+      },
+      {
+        "question": "What is the formula for the area of a circle?",
+        "options": ["πr", "πr²", "2πr", "r²"],
+        "correctAnswer": "πr²"
+      }
+    ],
+    "Science": [
+      {
+        "question": "What is the process of converting liquid to gas called?",
+        "options": ["Condensation", "Evaporation", "Sublimation", "Freezing"],
+        "correctAnswer": "Evaporation"
+      },
+      {
+        "question": "What is the SI unit of force?",
+        "options": ["Joule", "Newton", "Watt", "Pascal"],
+        "correctAnswer": "Newton"
+      }
+    ],
+    "English": [
+      {
+        "question": "What is a metaphor?",
+        "options": [
+          "A comparison using 'like' or 'as'",
+          "A direct comparison without 'like' or 'as'",
+          "An exaggeration",
+          "A statement with a hidden meaning"
+        ],
+        "correctAnswer": "A direct comparison without 'like' or 'as'"
+      },
+      {
+        "question": "What is the passive voice of 'He is eating an apple'?",
+        "options": [
+          "An apple is eaten by him",
+          "An apple is being eaten by him",
+          "He was eating an apple",
+          "An apple has been eaten by him"
+        ],
+        "correctAnswer": "An apple is being eaten by him"
+      }
+    ],
+    "Social Studies": [
+      {
+        "question": "Who is known as the 'Father of the Nation' in India?",
+        "options": ["Mahatma Gandhi", "Jawaharlal Nehru", "B. R. Ambedkar", "Sardar Patel"],
+        "correctAnswer": "Mahatma Gandhi"
+      },
+      {
+        "question": "Which revolution led to the increase in agricultural production in India?",
+        "options": ["White Revolution", "Green Revolution", "Blue Revolution", "Industrial Revolution"],
+        "correctAnswer": "Green Revolution"
+      }
+    ]
+  },
+  "Class 10": {
+    "Mathematics": [
+      {
+        "question": "What is the value of sin 90°?",
+        "options": ["0", "1", "-1", "Undefined"],
+        "correctAnswer": "1"
+      },
+      {
+        "question": "What is the quadratic formula for solving ax² + bx + c = 0?",
+        "options": [
+          "(-b ± √(b² - 4ac))/2a",
+          "(b ± √(b² - 4ac))/2a",
+          "(-b ± √(4ac - b²))/2a",
+          "(-b ± 4ac)/2a"
+        ],
+        "correctAnswer": "(-b ± √(b² - 4ac))/2a"
+      }
+    ],
+    "Science": [
+      {
+        "question": "What is the powerhouse of the cell?",
+        "options": ["Ribosome", "Nucleus", "Mitochondria", "Chloroplast"],
+        "correctAnswer": "Mitochondria"
+      },
+      {
+        "question": "What is the speed of light in vacuum?",
+        "options": ["300,000 m/s", "3,000 m/s", "300,000 km/s", "3,000 km/s"],
+        "correctAnswer": "300,000 km/s"
+      }
+    ],
+    "English": [
+      {
+        "question": "What is the antonym of 'optimistic'?",
+        "options": ["positive", "pessimistic", "hopeful", "cheerful"],
+        "correctAnswer": "pessimistic"
+      },
+      {
+        "question": "What is the meaning of 'brevity'?",
+        "options": ["length", "shortness", "width", "detail"],
+        "correctAnswer": "shortness"
+      }
+    ],
+    "Social Studies": [
+      {
+        "question": "Which body is responsible for making laws in India?",
+        "options": ["Supreme Court", "Parliament", "Election Commission", "Prime Minister's Office"],
+        "correctAnswer": "Parliament"
+      },
+      {
+        "question": "Which planet is known as the Red Planet?",
+        "options": ["Earth", "Mars", "Jupiter", "Saturn"],
+        "correctAnswer": "Mars"
+      }
+    ]
+  }
+}
