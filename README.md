@@ -1,4 +1,4 @@
-# GyanSetu - IIIT Lucknow
+# GyanSetu 
 
 ## 📌 Overview
 GyanSetu is an AI-driven digital learning platform designed to bridge the educational gap by offering high-quality virtual education. It integrates cutting-edge artificial intelligence to provide an interactive, accessible, and engaging learning experience for students, especially in remote and rural areas.
