@@ -52,4 +52,4 @@ flutter run
 This project is for **demonstration purposes only** and is **not intended for replication or redistribution**. Any use of this material should be strictly for educational or reference purposes.
 
 ---
-**GyanSetu - IIIT Lucknow | Empowering Education with AI & Technology**
+**GyanSetu | Empowering Education with AI & Technology**
