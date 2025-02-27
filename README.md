@@ -42,7 +42,7 @@ flutter run
 - Run the web platform by opening `index.html` in a browser.
 - Launch the mobile app to access GyanSetu on mobile devices.
 - **Join or Create Classes** using AI-enhanced Jitsi Meet integration.
-- **Collaborate on Whiteboards** with AI-assisted suggestions and exchange messages in real time.
+- **Collaborate on Whiteboards** with AI-Assisted suggestions and exchange messages in real time.
 - **Access AI-powered Quizzes & Assignments** with automatic difficulty adjustments.
 - **Utilize AI-Driven Data Analytics** for school infrastructure assessment and educational insights.
 - **Optimize Connectivity** using the built-in AI-powered network monitoring tools.
