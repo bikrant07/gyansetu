@@ -33,7 +33,7 @@ Simply open `index.html` in a browser to access the platform.
 
 ### Mobile App Setup (Flutter)
 ```sh
-cd gyansetu_client
+cd gyansetu_mobileApp
 flutter pub get
 flutter run
 ```
