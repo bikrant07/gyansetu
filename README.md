@@ -24,8 +24,8 @@ Ensure you have the following installed:
 
 ### Clone the Repository
 ```sh
-git clone https://github.com/NimishKushwaha/GyanSetu-iitLucknow.git
-cd GyanSetu-iitLucknow
+git clone https://github.com/NimishKushwaha/gyansetu.git
+cd gyansetu
 ```
 
 ### Web Platform Setup
